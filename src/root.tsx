@@ -21,6 +21,10 @@ export default component$(() => {
     <QwikCityProvider>
       <head>
         <meta charset="utf-8" />
+        <link rel="preconnect" href="https://fonts.googleapis.com"></link>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin=""></link>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet"></link>
+
         {!isDev && (
           <link
             rel="manifest"
