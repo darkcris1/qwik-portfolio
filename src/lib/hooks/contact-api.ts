@@ -1,7 +1,7 @@
 // src/utils/reusable-contact-action.ts
 
 import { z } from 'zod';
-import nodemailer from 'nodemailer';
+// import nodemailer from 'nodemailer';
 
 // Define schema once
 export const ContactFormSchema = z.object({
@@ -20,33 +20,33 @@ export const handleContactForm = async (data: any, fail: (status: number, data: 
     });
   }
 
-  try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-    // Define email options
-    let mailOptions = {
-      from: process.env.GMAIL_USER, // Sender address
-      to: 'crisfandino1@gmail.com', // List of recipients
-      subject: `Contact - ${data.name}`, // Subject line
-      text: data.body, // Plain text body
-      html: `
-      <div> <b>From: ${data.name}</b> </div>
-      <p>
-        ${data.body} 
-      </p>
-      ` // HTML body
+  // try {
+  //   const transporter = nodemailer.createTransport({
+  //     service: 'gmail',
+  //     auth: {
+  //       user: process.env.EMAIL_USER,
+  //       pass: process.env.EMAIL_PASS,
+  //     },
+  //   });
+  //   // Define email options
+  //   let mailOptions = {
+  //     from: process.env.GMAIL_USER, // Sender address
+  //     to: 'crisfandino1@gmail.com', // List of recipients
+  //     subject: `Contact - ${data.name}`, // Subject line
+  //     text: data.body, // Plain text body
+  //     html: `
+  //     <div> <b>From: ${data.name}</b> </div>
+  //     <p>
+  //       ${data.body} 
+  //     </p>
+  //     ` // HTML body
   
-    };
-    let info = await transporter.sendMail(mailOptions);
+  //   };
+  //   let info = await transporter.sendMail(mailOptions);
   
-  } catch (error) {
-    return fail(400, { errors: { detail: 'Failed to send'}})
-  }
+  // } catch (error) {
+  //   return fail(400, { errors: { detail: 'Failed to send'}})
+  // }
   
 
   // Return success
