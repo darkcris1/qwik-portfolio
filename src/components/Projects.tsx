@@ -127,18 +127,18 @@ export default component$(() => {
   return (
     <>
 
-    <section id="projects" class="relative w-full py-16 my-15 px-10 bg-gray-100 container">
+    <section id="projects" class="relative w-full overflow-hidden py-16 my-15 md:px-32 px-4 bg-gray-50 max-w-[1280px]">
     <ParticlesBackground />
       
-        <h2 class="absolute top-0 left-1/2 transform -translate-x-1/2 text-4xl font-bold bg-gradient-to-r from-blue-500 to-blue-300 bg-clip-text text-transparent text-center">
+        <h2 class="absolute top-0 left-1/2 transform -translate-x-1/2 text-4xl font-bold bg-gradient-to-r  bg-clip-text text-transparent text-center">
             <span
-              class="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-40% to-yellow-500 animate-glow-medium"
+              class="text-blue-700 animate-glow-medium"
             >
               Projects
             </span>
           </h2>
         {/* Central timeline line */}
-        <div class="absolute left-1/2 top-12 h-full w-1 bg-gray-300 z-0" style={{ transform: 'translateX(-50%)' }}></div>
+        <div class="absolute  left-1/2 top-12 h-[94%] w-1 bg-gray-300 z-0" style={{ transform: 'translateX(-50%)' }}></div>
         <div class="mt-10">
           <div class="relative z-10 flex flex-col gap-16">
             {projectsData.map((project, idx) => (
@@ -151,7 +151,7 @@ export default component$(() => {
                 <div
                   class={`bg-gray-300 h-1 absolute z-0 top-1/2 ${idx % 2 === 0 ? 'left-0' : 'right-0'} z-10`}
                   style={{
-                    width: 'calc(100% - 721px)', // Adjust as needed for your layout
+                    width: 'calc(100% - 630px)', // Adjust as needed for your layout
                     transform: 'translateY(-50%)',
                   }}
                 ></div>
@@ -188,6 +188,12 @@ export default component$(() => {
           )}
 
         </div>
+          
+        {/* <div class="mt-20 flex items-center justify-center">
+          <button class="cursor-pointer z-50 mt-5 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-70">
+              View Archive
+            </button>
+        </div> */}
       </section>
     </>
   );

@@ -3,4 +3,5 @@
 html {
     font-family: 'Inter', sans-serif;
     letter-spacing: -0.04px;
+    scroll-behavior: smooth;
   }
