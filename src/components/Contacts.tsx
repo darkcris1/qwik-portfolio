@@ -66,7 +66,7 @@ export default component$(({ action }: { action: any }) => {
       </div>
       <p class="text-center text-gray-600 mb-2">Location: Philippines</p>
       <form onSubmit$={handleSubmit} preventdefault:submit class="space-y-4 mt-8">
-        {actionErrors.value && (
+        {(!isLoading.value && actionErrors.value) && (
         <div class="text-red-500 text-sm mt-1">
             {(() => {
               const errors = actionErrors.value;

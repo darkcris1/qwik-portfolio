@@ -27,6 +27,7 @@ export async function POST(
   const data = await req.json();
 
   const result = ContactFormSchema.safeParse(data);
+
   if (!result.success) {
     return new Response(JSON.stringify({
       errors: result.error.flatten().fieldErrors,
@@ -35,7 +36,6 @@ export async function POST(
       headers: defaultResponseHeaders
     });
   }
-
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -46,19 +46,23 @@ export async function POST(
   });
 
   try {
+    console.log(process.env)
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: 'crisfandino1@gmail.com',
-      subject: `Contact - ${data.name}`,
+      subject: `Contact - ${result.data.name}`,
       text: body,
-      html: `<div><b>From: ${data.email}</b></div><p>${data.body}</p>`,
+      html: `<div><b>From: ${result.data.email}</b></div><p>${result.data.body}</p>`,
     });
 
-    return new Response(JSON.stringify({ detail: 'Email sent successfully' }), {
-      headers: defaultResponseHeaders
+    return new Response(JSON.stringify({ errors: { detail: 'Email sent successfully' } }), {
+      headers: defaultResponseHeaders,
     });
   } catch (error) {
-    return new Response(JSON.stringify({ detail: 'Failed to send email' }), {
+    return new Response(JSON.stringify({ errors: { 
+      detail: 'Failed to send email',
+      error: error.message, 
+    } }), {
       status: 400,
       headers: defaultResponseHeaders
     });
