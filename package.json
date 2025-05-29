@@ -64,6 +64,7 @@
     "react-tsparticles": "^2.12.2",
     "tailwindcss": "^4.1.7",
     "tsparticles": "^3.8.1",
+    "vercel-email": "^0.0.6",
     "yet-another-react-lightbox": "^3.23.2"
   }
 }

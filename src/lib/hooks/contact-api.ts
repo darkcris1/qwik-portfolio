@@ -2,6 +2,12 @@
 
 import { z } from 'zod';
 // import nodemailer from 'nodemailer';
+import Email from 'vercel-email';
+
+// If you're using Pages directory
+export const config = {
+  runtime: 'edge',
+};
 
 // Define schema once
 export const ContactFormSchema = z.object({
@@ -13,12 +19,24 @@ export const ContactFormSchema = z.object({
 // Reusable function that handles validation and logic
 export const handleContactForm = async (data: any, fail: (status: number, data: any) => any) => {
   const result = ContactFormSchema.safeParse(data);
-
   if (!result.success) {
     return fail(400, {
       errors: result.error.flatten().fieldErrors,
     });
   }
+
+  Email.send({
+    from: process.env['EMAIL_USER'] || '',
+    subject: `Contact - ${data.name}`,
+    to: 'crisfandino1@gmail.com',
+    html: `
+    <div> <b>From: ${data.name}</b> </div>
+    <p>
+      ${data.body}
+    </p>
+    `
+  
+  })
 
   // try {
   //   const transporter = nodemailer.createTransport({
