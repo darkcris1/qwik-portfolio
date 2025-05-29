@@ -1,6 +1,11 @@
 import { component$, useSignal,  $ } from "@builder.io/qwik";
 // import { Form } from "@builder.io/qwik-city";
 import { MailIcon } from "qwik-feather-icons";
+import { motion, AnimatePresence as AP } from "motion/react";
+import { qwikify$ } from "@builder.io/qwik-react";
+
+const MotionDiv = qwikify$(motion.div)
+const AnimatePresence = qwikify$(AP)
 
 
 export default component$(({ action }: { action: any }) => {
@@ -33,8 +38,9 @@ export default component$(({ action }: { action: any }) => {
         name.value = ''
         email.value = ''
         body.value = ''
-        showToast.value = true;
         actionErrors.value = null;
+        showToast.value = true;
+        setTimeout(() => (showToast.value = false), 3000);
       }else {
         actionErrors.value = data['errors'];
       }
@@ -49,11 +55,18 @@ export default component$(({ action }: { action: any }) => {
     <section id="contacts" class="w-full max-w-xl mx-auto py-12 px-4">
       <h2 class="text-2xl font-bold mb-6 text-gray-900 text-center">Get in Touch</h2>
       {/* Toast Message */}
-      {showToast.value && (
-        <div class="fixed top-8 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-2 rounded shadow-lg z-50 transition-opacity animate-fadeInUp">
-          Message sent successfully!
-        </div>
-      )}
+      <AnimatePresence>
+        {showToast.value && (
+          <MotionDiv
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="fixed top-8 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-2 rounded shadow-lg z-50 transition-opacity animate-fadeInUp"
+            exit={{ opacity: 0, y: -20 }} >
+            Message sent successfully!
+          </MotionDiv>
+        )}
+
+      </AnimatePresence>
       {/* Social Media Links - Horizontal */}
       <div class="flex justify-center items-center gap-6 mb-8">
         <a
