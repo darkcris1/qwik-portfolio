@@ -51,7 +51,7 @@ export async function POST(
       from: process.env.EMAIL_USER,
       to: 'crisfandino1@gmail.com',
       subject: `Contact - ${result.data.name}`,
-      text: body,
+      text: result.data.body,
       html: `<div><b>From: ${result.data.email}</b></div><p>${result.data.body}</p>`,
     });
 
