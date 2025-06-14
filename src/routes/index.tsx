@@ -9,7 +9,7 @@ import ToolsFrameworks from "~/components/ToolsFrameworks"; // Import the new co
 import { routeAction$ } from '@builder.io/qwik-city';
 import { handleContactForm } from "~/lib/hooks/contact-api";
 import { MenuIcon, XIcon } from "qwik-feather-icons";
-import { useSignal } from "@builder.io/qwik";
+import { useVisibleTask$, useSignal } from "@builder.io/qwik";
 import { qwikify$ } from "@builder.io/qwik-react";
 import { motion, AnimatePresence as AP } from "motion/react";
 
@@ -21,10 +21,63 @@ export const useMyAction = routeAction$(async (data, { fail }) => {
   return handleContactForm(data, fail)
 });
 
+const navItems = [
+  {
+    href: "#home",
+    label: "Home",
+    icon: HomeIcon,
+    scrollTo: "home",
+  },
+  {
+    href: "#about",
+    label: "About",
+    icon: UserIcon,
+    scrollTo: "about",
+  },
+  {
+    href: "#projects",
+    label: "Projects",
+    icon: FolderIcon,
+    scrollTo: "projects",
+  },
+  {
+    href: "#tools-frameworks",
+    label: "Tools",
+    icon: CpuIcon,
+    scrollTo: "tools-frameworks",
+  },
+  {
+    href: "#contacts",
+    label: "Contacts",
+    icon: MailIcon,
+    scrollTo: "contacts",
+  },
+];
 
 export default component$(() => {
   const action = useMyAction();
   const navOpen = useSignal(false);
+  const currentSection = useSignal("home");
+
+  useVisibleTask$(() => {
+    const handleScroll = () => {
+      let found = "home";
+      for (const item of navItems) {
+        const section = document.getElementById(item.scrollTo);
+        if (section) {
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= 80 && rect.bottom > 80) {
+            found = item.scrollTo;
+            break;
+          }
+        }
+      }
+      currentSection.value = found;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  });
 
   return (
     <div class="min-h-screen bg-gray-50 flex flex-col items-center relative">
@@ -54,26 +107,22 @@ export default component$(() => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 100 }}>
               <div class="flex flex-row bg-white shadow-lg rounded-full px-6 py-3 gap-6 md:gap-8 border border-gray-200">
-                <a href="#home" data-scrollto="home" class="flex flex-col items-center text-gray-500 hover:text-blue-600 transition-colors duration-200">
-                  <HomeIcon class="w-6 h-6" />
-                  <span class="text-xs mt-1">Home</span>
-                </a>
-                <a href="#about" data-scrollto="about" class="flex flex-col items-center text-gray-500 hover:text-blue-600 transition-colors duration-200">
-                  <UserIcon class="w-6 h-6" />
-                  <span class="text-xs mt-1">About</span>
-                </a>
-                <a href="#projects" data-scrollto="projects" class="flex flex-col items-center text-gray-500 hover:text-blue-600 transition-colors duration-200">
-                  <FolderIcon class="w-6 h-6" />
-                  <span class="text-xs mt-1">Projects</span>
-                </a>
-                <a href="#tools-frameworks" data-scrollto="tools-frameworks" class="flex flex-col items-center text-gray-500 hover:text-blue-600 transition-colors duration-200">
-                  <CpuIcon class="w-6 h-6" />
-                  <span class="text-xs mt-1">Tools</span>
-                </a>
-                <a href="#contacts" data-scrollto="contacts" class="flex flex-col items-center text-gray-500 hover:text-blue-600 transition-colors duration-200">
-                  <MailIcon class="w-6 h-6" />
-                  <span class="text-xs mt-1">Contacts</span>
-                </a>
+                {navItems.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    data-scrollto={item.scrollTo}
+                    class={
+                      "flex flex-col items-center transition-colors duration-200 " +
+                      (currentSection.value === item.scrollTo
+                        ? "text-blue-600 font-bold"
+                        : "text-gray-500 hover:text-blue-600")
+                    }
+                  >
+                    <item.icon class="w-6 h-6" />
+                    <span class="text-xs mt-1">{item.label}</span>
+                  </a>
+                ))}
               </div>
             </MotionDiv>
           )}
@@ -82,26 +131,22 @@ export default component$(() => {
       {/* Desktop/Tablet sidebar nav */}
       <nav class="fixed top-1/2 left-6 -translate-y-1/2 z-50 hidden md:block">
         <div class="flex flex-col backdrop-blur-md bg-white shadow-lg rounded-full px-3 py-6 gap-6 md:gap-8 border border-white/20 transition-all duration-300 animate-fadeInUp">
-          <a href="#home" data-scrollto="home" class="flex flex-col items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
-            <HomeIcon class="w-6 h-6" />
-            <span class="text-xs mt-1">Home</span>
-          </a>
-          <a href="#about" data-scrollto="about" class="flex flex-col items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
-            <UserIcon class="w-6 h-6" />
-            <span class="text-xs mt-1">About</span>
-          </a>
-          <a href="#projects" data-scrollto="projects" class="flex flex-col items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
-            <FolderIcon class="w-6 h-6" />
-            <span class="text-xs mt-1">Projects</span>
-          </a>
-          <a href="#tools-frameworks" data-scrollto="tools-frameworks" class="flex flex-col items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
-            <CpuIcon class="w-6 h-6" />
-            <span class="text-xs mt-1">Tools</span>
-          </a>
-          <a href="#contacts" data-scrollto="contacts" class="flex flex-col items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
-            <MailIcon class="w-6 h-6" />
-            <span class="text-xs mt-1">Contacts</span>
-          </a>
+          {navItems.map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              data-scrollto={item.scrollTo}
+              class={
+                "flex flex-col items-center transition-colors duration-200 " +
+                (currentSection.value === item.scrollTo
+                  ? "text-blue-600 font-bold"
+                  : "text-gray-700 hover:text-blue-600")
+              }
+            >
+              <item.icon class="w-6 h-6" />
+              <span class="text-xs mt-1">{item.label}</span>
+            </a>
+          ))}
         </div>
       </nav>
       <footer class="w-full py-4 bg-gray-900 border-t text-center text-gray-100 text-sm z-40">

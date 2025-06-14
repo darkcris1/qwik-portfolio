@@ -13,7 +13,7 @@ export default component$(() => {
         height={120}
       />
       <h1 class="text-3xl font-bold mb-2 text-blue-600 text-center">Cris Jr. T. Fandiño</h1>
-      <p class="text-lg text-gray-600 text-center mb-2">Fullstack Developer</p>
+      <p class="text-lg text-gray-600 text-center mb-2">Full Stack Developer</p>
       <p class="text-center text-gray-600">Over 4 years of experience specializing in building web applications</p>
       <div class="flex items-center space-x-4 mt-4">
         <a
