@@ -46,7 +46,7 @@ export default component$(() => {
             {tools.slice(0, 7).map((tool) => (
               // Each tool item needs some spacing if they are directly next to each other
               <div key={tool.alt} class="flex flex-col items-center p-4 mx-2 flex-shrink-0 transition-transform duration-300 hover:scale-110">
-                <img src={tool.src} alt={tool.alt} class="md:h-16 md:w-16 h-6 w-6 mb-2" />
+                <img src={tool.src} alt={tool.alt} width={64} height={64} class="md:h-16 md:w-16 h-6 w-6 mb-2" />
                 <p class="text-center text-sm">{tool.alt}</p>
               </div>
             ))}
@@ -58,7 +58,7 @@ export default component$(() => {
             {tools.slice(7, 14).map((tool) => (
               // Each tool item needs some spacing if they are directly next to each other
               <div key={tool.alt} class="flex flex-col items-center p-4 mx-2 flex-shrink-0 transition-transform duration-300 hover:scale-110">
-                <img src={tool.src} loading='lazy' alt={tool.alt} class="md:h-16 md:w-16 h-6 w-6 mb-2" />
+                <img src={tool.src} loading='lazy' alt={tool.alt} width={64} height={64} class="md:h-16 md:w-16 h-6 w-6 mb-2" />
                 <p class="text-center text-sm">{tool.alt}</p>
               </div>
             ))}
@@ -71,7 +71,7 @@ export default component$(() => {
             {tools.slice(14, 21).map((tool) => (
               // Each tool item needs some spacing if they are directly next to each other
               <div key={tool.alt} class="flex flex-col items-center p-4 mx-2 flex-shrink-0 transition-transform duration-300 hover:scale-110">
-                <img src={tool.src} alt={tool.alt} class="md:h-16 md:w-16 h-6 w-6 mb-2" />
+                <img src={tool.src} alt={tool.alt} width={64} height={64} class="md:h-16 md:w-16 h-6 w-6 mb-2" />
                 <p class="text-center text-sm">{tool.alt}</p>
               </div>
             ))}
@@ -85,7 +85,7 @@ export default component$(() => {
             {tools.slice(0, 4).map((tool) => (
               // Each tool item needs some spacing if they are directly next to each other
               <div key={tool.alt} class="flex flex-col items-center p-4 mx-2 flex-shrink-0 transition-transform duration-300 hover:scale-110">
-                <img src={tool.src} alt={tool.alt} class="md:h-16 md:w-16 h-8 w-8 mb-2" />
+                <img src={tool.src} alt={tool.alt} width={64} height={64} class="md:h-16 md:w-16 h-8 w-8 mb-2" />
               </div>
             ))}
             </div>
@@ -96,7 +96,7 @@ export default component$(() => {
             {tools.slice(4, 8).map((tool) => (
               // Each tool item needs some spacing if they are directly next to each other
               <div key={tool.alt} class="flex flex-col items-center p-4 mx-2 flex-shrink-0 transition-transform duration-300 hover:scale-110">
-                <img src={tool.src} loading='lazy' alt={tool.alt} class="md:h-16 md:w-16 h-8 w-8 mb-2" />
+                <img src={tool.src} loading='lazy' alt={tool.alt} width={64} height={64} class="md:h-16 md:w-16 h-8 w-8 mb-2" />
               </div>
             ))}
             </div>
@@ -108,7 +108,7 @@ export default component$(() => {
             {tools.slice(8, 12).map((tool) => (
               // Each tool item needs some spacing if they are directly next to each other
               <div key={tool.alt} class="flex flex-col items-center p-4 mx-2 flex-shrink-0 transition-transform duration-300 hover:scale-110">
-                <img src={tool.src} alt={tool.alt} class="md:h-16 md:w-16 h-8 w-8 mb-2" />
+                <img src={tool.src} alt={tool.alt} width={64} height={64} class="md:h-16 md:w-16 h-8 w-8 mb-2" />
               </div>
             ))}
             </div>
@@ -119,7 +119,7 @@ export default component$(() => {
             {tools.slice(12, 16).map((tool) => (
               // Each tool item needs some spacing if they are directly next to each other
               <div key={tool.alt} class="flex flex-col items-center p-4 mx-2 flex-shrink-0 transition-transform duration-300 hover:scale-110">
-                <img src={tool.src} alt={tool.alt} class="md:h-16 md:w-16 h-8 w-8 mb-2" />
+                <img src={tool.src} alt={tool.alt} width={64} height={64} class="md:h-16 md:w-16 h-8 w-8 mb-2" />
               </div>
             ))}
             </div>
@@ -130,7 +130,7 @@ export default component$(() => {
             {tools.slice(16, 20).map((tool) => (
               // Each tool item needs some spacing if they are directly next to each other
               <div key={tool.alt} class="flex flex-col items-center p-4 mx-2 flex-shrink-0 transition-transform duration-300 hover:scale-110">
-                <img src={tool.src} alt={tool.alt} class="md:h-16 md:w-16 h-8 w-8 mb-2" />
+                <img src={tool.src} alt={tool.alt} width={64} height={64} class="md:h-16 md:w-16 h-8 w-8 mb-2" />
               </div>
             ))}
             </div>
