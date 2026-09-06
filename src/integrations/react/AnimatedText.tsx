@@ -8,7 +8,7 @@ interface ReactAnimatedTextProps {
   text: string;
   textClassName?: string;
   containerClassName?: string;
-  tag?: keyof JSX.IntrinsicElements;
+  tag?: keyof React.JSX.IntrinsicElements;
 }
 
 const ReactAnimatedTextComponent: React.FC<ReactAnimatedTextProps> = ({
@@ -16,7 +16,7 @@ const ReactAnimatedTextComponent: React.FC<ReactAnimatedTextProps> = ({
   textClassName,
   containerClassName,
   tag = 'div',
-}): JSX.Element => {
+}): React.JSX.Element => {
   const TextElement = tag as ElementType;
 
   const variants = {
@@ -26,7 +26,7 @@ const ReactAnimatedTextComponent: React.FC<ReactAnimatedTextProps> = ({
       x: 0,
       transition: {
         duration: 0.6,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
       },
     },
   };

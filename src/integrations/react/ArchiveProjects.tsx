@@ -10,7 +10,7 @@ interface ReactArchiveProjectsProps {
 
 const ReactArchiveProjects: React.FC<ReactArchiveProjectsProps> = ({
   projects,
-}): JSX.Element => {
+}): React.JSX.Element => {
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
 
   // Handle Escape key to close modal

@@ -1,29 +1,13 @@
 /** @jsxImportSource react */
 
 import { qwikify$ } from "@builder.io/qwik-react";
-import Particles,{ initParticlesEngine } from "@tsparticles/react";
-import { useEffect, useMemo, useState } from "react";
-import { loadSlim } from "@tsparticles/slim"; 
+import Particles, { ParticlesProvider, useParticlesProvider } from "@tsparticles/react";
+import { useMemo } from "react";
+import { loadSlim } from "@tsparticles/slim";
 import { Container, MoveDirection, OutMode } from "@tsparticles/engine";
 
-const ParticlesBackground: React.FC<any> = () => {
-
-  const [init, setInit] = useState(false);
-
-  // this should be run only once per application lifetime
-  useEffect(() => {
-    initParticlesEngine(async (engine) => {
-      // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
-      // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
-      // starting from v2 you can add only the features you need reducing the bundle size
-      //await loadAll(engine);
-      // await loadFull(engine);
-      await loadSlim(engine);
-      //await loadBasic(engine);
-    }).then(() => {
-      setInit(true);
-    });
-  }, []);
+const ParticlesBackgroundInner: React.FC<any> = () => {
+  const { loaded: init } = useParticlesProvider();
 
   const particlesLoaded = async (container?: Container): Promise<void> => {
     console.log(container);
@@ -125,6 +109,12 @@ const ParticlesBackground: React.FC<any> = () => {
     </div>
   );
 };
+
+const ParticlesBackground: React.FC<any> = () => (
+  <ParticlesProvider init={async (engine) => { await loadSlim(engine); }}>
+    <ParticlesBackgroundInner />
+  </ParticlesProvider>
+);
 
 export default qwikify$(ParticlesBackground, {
   eagerness: 'visible'
