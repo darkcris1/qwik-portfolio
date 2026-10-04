@@ -26,8 +26,9 @@ export default component$(({ action }: { action: any }) => {
           body: body.value
         })
       });
-      const data = await res.json()
-  
+      // A missing endpoint (like in local dev) returns HTML, so don't assume JSON.
+      const data = await res.json().catch(() => ({}));
+
       if (res.ok) {
         name.value = ''
         email.value = ''
@@ -35,9 +36,12 @@ export default component$(({ action }: { action: any }) => {
         actionErrors.value = null;
         showToast.value = true;
         setTimeout(() => (showToast.value = false), 3000);
-      }else {
-        actionErrors.value = data['errors'];
+      } else {
+        actionErrors.value = data["errors"] ?? { detail: "Couldn't send the message. Please email me instead." };
       }
+    } catch {
+      // An uncaught error here freezes the page in Qwik v2.
+      actionErrors.value = { detail: "Couldn't send the message. Please email me instead." };
     } finally {
       isLoading.value = false;
     }
