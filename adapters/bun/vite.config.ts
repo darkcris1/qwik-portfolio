@@ -11,6 +11,7 @@ export default extendConfig(baseConfig, () => {
       },
       minify: false,
     },
-    plugins: [bunServerAdapter()],
+    // The dynamic /sitemap.xml route lists blog posts, so skip the static one.
+    plugins: [bunServerAdapter({ ssg: { sitemapOutFile: null } })],
   };
 });

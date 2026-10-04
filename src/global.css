@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
   --color-ink: #0b1220;
@@ -31,6 +32,17 @@
 
   section[id] {
     scroll-margin-top: 5.5rem;
+  }
+
+  /* Tailwind v4 dropped the pointer cursor on buttons, so bring it back. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  label:has(> input[type="radio"]) {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
   }
 
   :focus-visible {

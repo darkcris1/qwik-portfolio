@@ -7,12 +7,13 @@ import { useDocumentHead, useLocation } from "@qwik.dev/router";
 export const RouterHead = component$(() => {
   const head = useDocumentHead();
   const loc = useLocation();
+  const hasCanonical = head.links.some((l) => l.rel === "canonical");
 
   return (
     <>
       <title>{head.title}</title>
 
-      <link rel="canonical" href={loc.url.href} />
+      {!hasCanonical && <link rel="canonical" href={loc.url.origin + loc.url.pathname} />}
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="icon" type="image/png" href="/favicon.png" />
 

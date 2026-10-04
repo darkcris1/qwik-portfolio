@@ -29,6 +29,11 @@
     "@qwik.dev/core": "2.0.0-rc.0",
     "@qwik.dev/react": "2.0.0-beta.40",
     "@qwik.dev/router": "2.0.0-rc.0",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tiptap/core": "^3.31.4",
+    "@tiptap/extension-image": "^3.31.4",
+    "@tiptap/pm": "^3.31.4",
+    "@tiptap/starter-kit": "^3.31.4",
     "@types/bun": "*",
     "@types/node": "^26.4.1",
     "@types/react": "^19.2.18",
@@ -43,7 +48,6 @@
     "qwik-feather-icons": "^1.2.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "supabase-auth-helpers-qwik": "^0.0.3",
     "typescript": "^6.0.3",
     "undici": "^8.10.2",
     "vercel": "^59.11.7",
@@ -52,9 +56,11 @@
     "zod": "^4.5.4"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.115.0",
     "@tailwindcss/vite": "^4.3.3",
     "tailwindcss": "^4.3.3",
-    "vercel-email": "^0.0.6"
+    "vercel-email": "^0.0.6",
+    "xss": "^1.0.15"
   }
 }

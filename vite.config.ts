@@ -32,8 +32,6 @@ export default defineConfig(({ command, mode }): UserConfig => {
     // qwik-feather-icons is built for Qwik v1, so point its imports at v2.
     resolve: {
       alias: [{ find: /^@builder\.io\/qwik$/, replacement: "@qwik.dev/core" }],
-    },
-    ssr: {
       noExternal: ["qwik-feather-icons"],
     },
     // This tells Vite which dependencies to pre-build in dev mode.

@@ -32,7 +32,8 @@ export default component$(() => {
           </h1>
           <p class="mt-7 max-w-xl text-lg leading-relaxed text-mist">
             Over {years} years building web apps for real estate sales, HR and payroll, and live drone
-            tracking. Django and Python on the server; Angular, React or Svelte in the browser.
+            tracking. Django and Python on the server, Angular, React or Svelte in the browser, AWS and
+            Terraform underneath, and Claude Code in my workflow.
           </p>
 
           <div class="mt-9 flex flex-wrap items-center gap-3">

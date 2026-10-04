@@ -99,3 +99,25 @@ Notice that you might need a [Vercel account](https://docs.Vercel.com/get-starte
 The project is ready to be deployed to Vercel. However, you will need to create a git repository and push the code to it.
 
 You can [deploy your site to Vercel](https://vercel.com/docs/concepts/deployments/overview) either via a Git provider integration or through the Vercel CLI.
+
+## Blog and admin
+
+The blog lives at `/blog`, and posts are managed at `/admin` (Google sign-in, owner only).
+
+### Environment
+
+```
+SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+ADMIN_EMAIL=sircnujnuj@gmail.com
+```
+
+Set the same variables in Vercel. The secret key isn't needed: all access goes through the publishable key, the signed-in session and row level security.
+
+### One-time Supabase setup
+
+1. Run `supabase/migrations/0001_posts.sql` in the Supabase SQL editor.
+2. In Google Cloud, create an OAuth client (web) with redirect URI `https://<project-ref>.supabase.co/auth/v1/callback`, then enable the Google provider in Supabase (Authentication → Sign In / Providers) with its client ID and secret.
+3. In Authentication → URL Configuration, set the site URL and add these redirect URLs: `http://localhost:5173/admin/auth/callback/` and `https://<your-domain>/admin/auth/callback/`.
+4. Sign in at `/admin` once with the owner account so Supabase creates the user.
+5. Turn off "Allow new users to sign up" (Authentication → Sign In / Providers). Other emails are also rejected by the app and by the database policies.

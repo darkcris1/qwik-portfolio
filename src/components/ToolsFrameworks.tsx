@@ -2,34 +2,38 @@ import { component$ } from "@qwik.dev/core";
 import { AnimatedTools } from "./AnimatedToolsQwik";
 
 const tools = [
-  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-original.svg", alt: "bootstrap" },
   { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg", alt: "html5" },
   { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg", alt: "css3" },
-  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-original.svg", alt: "tailwind" },
-  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/sass/sass-original.svg", alt: "sass" },
-  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg", alt: "react" },
-  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/svelte/svelte-original.svg", alt: "svelte" },
-  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/angular/angular-original.svg", alt: "angular" },
   { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg", alt: "javascript" },
   { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg", alt: "typescript" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg", alt: "react" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/angular/angular-original.svg", alt: "angular" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/svelte/svelte-original.svg", alt: "svelte" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-original.svg", alt: "tailwind" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/sass/sass-original.svg", alt: "sass" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-original.svg", alt: "bootstrap" },
   { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg", alt: "nodejs" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg", alt: "python" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/django/django-plain.svg", alt: "django" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original.svg", alt: "postgresql" },
   { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original.svg", alt: "mongodb" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg", alt: "aws" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/terraform/terraform-original.svg", alt: "terraform" },
+  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/ubuntu/ubuntu-original.svg", alt: "ubuntu" },
+  { src: "https://cdn.simpleicons.org/claude", alt: "claude code" },
   { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg", alt: "git" },
+  { src: "https://github.com/devicons/devicon/raw/master/icons/vscode/vscode-original.svg", alt: "vscode" },
   { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/npm/npm-original-wordmark.svg", alt: "npm" },
   { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/yarn/yarn-original-wordmark.svg", alt: "yarn" },
-  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/django/django-plain.svg", alt: "django" },
-  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg", alt: "python" },
-  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/ubuntu/ubuntu-original.svg", alt: "ubuntu" },
-  { src: "https://github.com/devicons/devicon/raw/master/icons/vscode/vscode-original.svg", alt: "vscode" },
   { src: "https://github.com/devicons/devicon/raw/master/icons/jira/jira-original.svg", alt: "jira" },
-  { src: "https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original.svg", alt: "postgresql" },
 ];
 
 // Each row drifts in from a different side as the section scrolls into view.
 const rows = [
-  { items: tools.slice(0, 7), xDistance: -200 },
-  { items: tools.slice(7, 14), xDistance: 140 },
-  { items: tools.slice(14, 21), xDistance: -120 },
+  { items: tools.slice(0, 6), xDistance: -200 },
+  { items: tools.slice(6, 12), xDistance: 140 },
+  { items: tools.slice(12, 18), xDistance: -160 },
+  { items: tools.slice(18, 24), xDistance: 120 },
 ];
 
 export default component$(() => {

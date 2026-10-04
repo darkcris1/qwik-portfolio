@@ -11,6 +11,7 @@ export default extendConfig(baseConfig, () => {
       },
       outDir: ".vercel/output/functions/_qwik-router.func",
     },
-    plugins: [vercelEdgeAdapter()],
+    // The dynamic /sitemap.xml route lists blog posts, so skip the static one.
+    plugins: [vercelEdgeAdapter({ ssg: { sitemapOutFile: null } })],
   };
 });
