@@ -45,103 +45,135 @@ export default component$(({ action }: { action: any }) => {
 
 
 
+  const field =
+    "block w-full rounded-xl border border-line bg-ice/60 px-4 py-3 text-ink placeholder:text-muted transition-colors focus:border-brand focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand/15";
+
   return (
-    <section id="contacts" class="w-full max-w-xl mx-auto py-12 px-4">
-      <h2 class="text-2xl font-bold mb-6 text-gray-900 text-center">Get in Touch</h2>
-      {/* Toast Message */}
+    <section id="contacts" class="w-full bg-ice">
       <div
         role="status"
         class={
-          "fixed top-8 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-2 rounded shadow-lg z-50 transition-all duration-300 " +
-          (showToast.value ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-5 pointer-events-none")
+          "fixed left-1/2 top-24 z-[60] -translate-x-1/2 rounded-xl bg-ink px-5 py-3 text-sm font-medium text-white shadow-2xl shadow-ink/30 transition-all duration-300 " +
+          (showToast.value ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-4 opacity-0")
         }
       >
         {/* Text is added on show so screen readers announce it. */}
-        {showToast.value ? "Message sent successfully!" : ""}
+        {showToast.value ? "Message sent. I'll get back to you by email." : ""}
       </div>
-      {/* Social Media Links - Horizontal */}
-      <div class="flex justify-center items-center gap-6 mb-8">
-        <a
-          href="mailto:crisfandino1@gmail.com"
-          class="text-gray-600 hover:text-red-600 transition-colors"
-          aria-label="Send Email"
+
+      <div class="mx-auto grid max-w-6xl gap-12 px-4 py-24 md:grid-cols-[0.9fr_1.1fr] md:gap-16 md:py-32">
+        <div>
+          <p class="eyebrow">Contact</p>
+          <h2 class="mt-5 font-display text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">
+            Tell me what you're building.
+          </h2>
+          <p class="mt-5 max-w-md text-lg leading-relaxed text-muted">
+            Send a message with the form, or email me directly.
+          </p>
+          <dl class="mt-10 space-y-5">
+            <div>
+              <dt class="font-mono text-xs uppercase tracking-[0.18em] text-muted">Email</dt>
+              <dd class="mt-1.5">
+                <a
+                  href="mailto:crisfandino1@gmail.com"
+                  class="inline-flex items-center gap-2 text-lg font-semibold text-ink underline-offset-4 hover:text-brand-ink hover:underline"
+                >
+                  <MailIcon class="h-5 w-5 text-brand" />
+                  crisfandino1@gmail.com
+                </a>
+              </dd>
+            </div>
+            <div>
+              <dt class="font-mono text-xs uppercase tracking-[0.18em] text-muted">Location</dt>
+              <dd class="mt-1.5 text-lg font-semibold text-ink">Philippines</dd>
+            </div>
+          </dl>
+        </div>
+
+        <form
+          onSubmit$={handleSubmit}
+          preventdefault:submit
+          class="space-y-5 rounded-3xl border border-line bg-white p-6 shadow-2xl shadow-ink/5 md:p-8"
         >
-          <MailIcon class="w-7 h-7" />
-        </a>
-      </div>
-      <p class="text-center text-gray-600 mb-2">Location: Philippines</p>
-      <form onSubmit$={handleSubmit} preventdefault:submit class="space-y-4 mt-8">
-        {(!isLoading.value && actionErrors.value) && (
-        <div class="text-red-500 text-sm mt-1">
-            {(() => {
-              const errors = actionErrors.value;
-              if (typeof errors === 'string') return errors;
-              if (Array.isArray(errors)) return errors[0];
-              if (typeof errors === 'object' && errors !== null) {
-                if ('detail' in errors && errors.detail) return errors.detail;
-                const firstKey = Object.keys(errors)[0];
-                const val = errors[firstKey];
-                if (Array.isArray(val)) return val[0];
-                return val;
-              }
-              return null;
-            })()}
+          {!isLoading.value && actionErrors.value && (
+            <div role="alert" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {(() => {
+                const errors = actionErrors.value;
+                if (typeof errors === "string") return errors;
+                if (Array.isArray(errors)) return errors[0];
+                if (typeof errors === "object" && errors !== null) {
+                  if ("detail" in errors && errors.detail) return errors.detail;
+                  const firstKey = Object.keys(errors)[0];
+                  const val = errors[firstKey];
+                  if (Array.isArray(val)) return val[0];
+                  return val;
+                }
+                return null;
+              })()}
+            </div>
+          )}
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="name" class="mb-2 block text-sm font-semibold text-ink">
+                Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                required
+                autocomplete="name"
+                class={field}
+                placeholder="Your name"
+                value={name.value}
+                onInput$={(e) => (name.value = (e.target as HTMLInputElement).value)}
+              />
+              <small class="text-red-600">{action.errors}</small>
+            </div>
+            <div>
+              <label for="email" class="mb-2 block text-sm font-semibold text-ink">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                required
+                autocomplete="email"
+                class={field}
+                placeholder="you@example.com"
+                value={email.value}
+                onInput$={(e) => (email.value = (e.target as HTMLInputElement).value)}
+              />
+            </div>
           </div>
-        )}
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-          <input
-            type="text"
-            name="name"
-            id="name"
-            required
-            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Your Name"
-            value={name.value}
-            onInput$={e => (name.value = (e.target as HTMLInputElement).value)}
-          />
-          <small class="text-red-500">{action.errors}</small>
-        </div>
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            required
-            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="you@example.com"
-            value={email.value}
-            onInput$={e => (email.value = (e.target as HTMLInputElement).value)}
-          />
-        </div>
-        <div>
-          <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
-          <textarea
-            id="message"
-            name="body"
-            rows={4}
-            required
-            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Your message..."
-            value={body.value}
-            onInput$={e => (body.value = (e.target as HTMLTextAreaElement).value)}
-          ></textarea>
-        </div>
-        <div>
-          <button
-            type="submit"
-            disabled={isLoading.value}
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-70"
-          >
+          <div>
+            <label for="message" class="mb-2 block text-sm font-semibold text-ink">
+              Message
+            </label>
+            <textarea
+              id="message"
+              name="body"
+              rows={5}
+              required
+              class={field}
+              placeholder="What are you building, and where can I help?"
+              value={body.value}
+              onInput$={(e) => (body.value = (e.target as HTMLTextAreaElement).value)}
+            ></textarea>
+          </div>
+          <button type="submit" disabled={isLoading.value} class="btn-primary w-full justify-center disabled:opacity-70">
             {isLoading.value ? (
-              <div class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+              <>
+                <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+                Sending…
+              </>
             ) : (
-              'Send Message'
+              "Send message"
             )}
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </section>
   );
 });

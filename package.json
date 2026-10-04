@@ -54,11 +54,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.115.0",
     "@tailwindcss/vite": "^4.3.3",
-    "@tsparticles/engine": "^4.4.0",
-    "@tsparticles/react": "^4.4.0",
-    "@tsparticles/slim": "^4.4.0",
     "tailwindcss": "^4.3.3",
-    "vercel-email": "^0.0.6",
-    "yet-another-react-lightbox": "^3.32.2"
+    "vercel-email": "^0.0.6"
   }
 }

@@ -1,52 +1,25 @@
 import { component$ } from "@qwik.dev/core";
 import type { DocumentHead } from "@qwik.dev/router";
-import { HomeIcon, UserIcon, FolderIcon, MailIcon, CpuIcon } from "qwik-feather-icons"; // Added CpuIcon
 import Home from "~/components/Home";
 import About from "~/components/About";
 import Projects from "~/components/Projects";
 import Contacts from "~/components/Contacts";
-import ToolsFrameworks from "~/components/ToolsFrameworks"; // Import the new component
+import ToolsFrameworks from "~/components/ToolsFrameworks";
 import { routeAction$ } from '@qwik.dev/router';
 import { handleContactForm } from "~/lib/hooks/contact-api";
 import { MenuIcon, XIcon } from "qwik-feather-icons";
 import { useVisibleTask$, useSignal } from "@qwik.dev/core";
 
-// Define the action to handle the POST request
 export const useMyAction = routeAction$(async (data, { fail }) => {
   return handleContactForm(data, fail)
 });
 
 const navItems = [
-  {
-    href: "#home",
-    label: "Home",
-    icon: HomeIcon,
-    scrollTo: "home",
-  },
-  {
-    href: "#about",
-    label: "About",
-    icon: UserIcon,
-    scrollTo: "about",
-  },
-  {
-    href: "#projects",
-    label: "Projects",
-    icon: FolderIcon,
-    scrollTo: "projects",
-  },
-  {
-    href: "#tools-frameworks",
-    label: "Tools",
-    icon: CpuIcon,
-    scrollTo: "tools-frameworks",
-  },
-  {
-    href: "#contacts",
-    label: "Contacts",
-    icon: MailIcon,
-    scrollTo: "contacts",
-  },
+  { href: "#home", label: "Home", scrollTo: "home" },
+  { href: "#about", label: "About", scrollTo: "about" },
+  { href: "#projects", label: "Work", scrollTo: "projects" },
+  { href: "#tools-frameworks", label: "Stack", scrollTo: "tools-frameworks" },
+  { href: "#contacts", label: "Contact", scrollTo: "contacts" },
 ];
 
 export default component$(() => {
@@ -54,39 +27,37 @@ export default component$(() => {
   const navOpen = useSignal(false);
   const currentSection = useSignal("home");
 
-  // Needs DOM section elements to observe as soon as the page is visible; IntersectionObserver
-  // itself is passive, so this replaces the old scroll+getBoundingClientRect layout thrashing.
+  // Scrollspy: the active section is the last one whose top has passed a line 35% down the viewport.
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(({ cleanup }) => {
-    const visibleRatios = new Map<string, number>();
+    const sections = navItems
+      .map((item) => document.getElementById(item.scrollTo))
+      .filter((el): el is HTMLElement => !!el);
+    let frame = 0;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          visibleRatios.set(entry.target.id, entry.intersectionRatio);
-        }
-        let found = currentSection.value;
-        let best = 0;
-        for (const item of navItems) {
-          const ratio = visibleRatios.get(item.scrollTo) ?? 0;
-          if (ratio > best) {
-            best = ratio;
-            found = item.scrollTo;
-          }
-        }
-        currentSection.value = found;
-      },
-      // rootMargin shifts the observed viewport up so a section counts as
-      // "current" once it passes the fixed nav bar, matching the old 80px offset
-      { rootMargin: "-80px 0px -60% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
-    );
+    const update = () => {
+      frame = 0;
+      const line = window.innerHeight * 0.35;
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      let active = sections[0]?.id ?? "home";
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= line) active = section.id;
+      }
+      if (atBottom && sections.length) active = sections[sections.length - 1].id;
+      currentSection.value = active;
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
 
-    for (const item of navItems) {
-      const section = document.getElementById(item.scrollTo);
-      if (section) observer.observe(section);
-    }
-
-    cleanup(() => observer.disconnect());
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    cleanup(() => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    });
   });
 
   const mobileNavRef = useSignal<HTMLDivElement>();
@@ -114,82 +85,95 @@ export default component$(() => {
   });
 
   return (
-    <div class="min-h-screen bg-gray-50 flex flex-col items-center relative">
-      <Home />
-      <About />
-      <Projects />
-      <ToolsFrameworks />
-      <Contacts action={action} />
-      {/* Burger menu button for mobile */}
-      <div
-        ref={mobileNavRef}
-        class="fixed h-[70px] z-[50] top-4 inset-x-4 flex flex-row items-center gap-2 md:hidden"
-      >
-        <button
-          class="z-[100] bg-white rounded-full p-2 shadow-lg border border-gray-200 transition-all"
-          aria-label="Open navigation menu"
-          aria-expanded={navOpen.value}
-          onClick$={() => (navOpen.value = !navOpen.value)}
-        >
-          { !navOpen.value && <MenuIcon class="w-8 h-8 text-gray-700" />}
-          { navOpen.value && <XIcon class="w-8 h-8 text-gray-700" />}
-        </button>
-        {/* Mobile nav menu, slides down from below the burger icon */}
-        <div
-          inert={!navOpen.value}
-          class={
-            "absolute top-full left-0 mt-2 origin-top-left transition-all duration-200 ease-out " +
-            (navOpen.value
-              ? "opacity-100 translate-y-0 scale-100"
-              : "opacity-0 -translate-y-5 scale-[0.85] pointer-events-none")
-          }
-        >
-          <div class="flex flex-col bg-white shadow-lg rounded-full px-3 py-6 gap-6 border border-gray-200">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                data-scrollto={item.scrollTo}
-                aria-current={currentSection.value === item.scrollTo ? "page" : undefined}
-                onClick$={() => (navOpen.value = false)}
-                class={
-                  "flex flex-col items-center transition-colors duration-200 " +
-                  (currentSection.value === item.scrollTo
-                    ? "text-blue-600 font-bold"
-                    : "text-gray-500 hover:text-blue-600")
-                }
-              >
-                <item.icon class="w-6 h-6" />
-                <span class="text-xs mt-1">{item.label}</span>
-              </a>
-            ))}
+    <div class="min-h-screen">
+      <header class="fixed inset-x-0 top-0 z-50">
+        <div ref={mobileNavRef} class="relative mx-auto mt-3 max-w-6xl px-3 md:px-4">
+          <nav
+            aria-label="Main"
+            class="flex h-14 items-center justify-between rounded-2xl border border-white/10 bg-ink/90 pl-3 pr-2 shadow-lg shadow-black/20 backdrop-blur-md"
+          >
+            <a href="#home" class="flex items-center gap-2.5 rounded-lg font-display text-sm font-medium text-white">
+              <img src="/favicon.png" alt="" width={32} height={32} class="h-8 w-8 rounded-lg object-cover" />
+              Cris Fandiño
+            </a>
+
+            <ul class="hidden items-center gap-1 md:flex">
+              {navItems.map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    aria-current={currentSection.value === item.scrollTo ? "true" : undefined}
+                    class={
+                      "rounded-lg px-3.5 py-2 text-sm font-medium transition-colors " +
+                      (currentSection.value === item.scrollTo
+                        ? "bg-white/10 text-white"
+                        : "text-mist hover:text-white")
+                    }
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <button
+              class="grid h-10 w-10 place-items-center rounded-xl text-white transition-colors hover:bg-white/10 md:hidden"
+              aria-label={navOpen.value ? "Close menu" : "Open menu"}
+              aria-expanded={navOpen.value}
+              aria-controls="mobile-menu"
+              onClick$={() => (navOpen.value = !navOpen.value)}
+            >
+              {navOpen.value ? <XIcon class="h-6 w-6" /> : <MenuIcon class="h-6 w-6" />}
+            </button>
+          </nav>
+
+          {/* Mobile menu, slides down under the bar. */}
+          <div
+            id="mobile-menu"
+            inert={!navOpen.value}
+            class={
+              "absolute inset-x-3 top-full mt-2 origin-top rounded-2xl border border-white/10 bg-ink/95 p-2 shadow-2xl backdrop-blur-md transition-all duration-200 ease-out md:hidden " +
+              (navOpen.value ? "translate-y-0 scale-100 opacity-100" : "pointer-events-none -translate-y-3 scale-95 opacity-0")
+            }
+          >
+            <ul>
+              {navItems.map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    aria-current={currentSection.value === item.scrollTo ? "true" : undefined}
+                    onClick$={() => (navOpen.value = false)}
+                    class={
+                      "block rounded-xl px-4 py-3 font-medium transition-colors " +
+                      (currentSection.value === item.scrollTo ? "bg-white/10 text-white" : "text-mist hover:text-white")
+                    }
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      </div>
-      {/* Desktop/Tablet sidebar nav */}
-      <nav class="fixed top-1/2 left-6 -translate-y-1/2 z-50 hidden md:block">
-        <div class="flex flex-col backdrop-blur-md bg-white shadow-lg rounded-full px-3 py-6 gap-6 md:gap-8 border border-white/20 transition-all duration-300 animate-fadeInUp">
-          {navItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              data-scrollto={item.scrollTo}
-              aria-current={currentSection.value === item.scrollTo ? "page" : undefined}
-              class={
-                "flex flex-col items-center transition-colors duration-200 " +
-                (currentSection.value === item.scrollTo
-                  ? "text-blue-600 font-bold"
-                  : "text-gray-700 hover:text-blue-600")
-              }
-            >
-              <item.icon class="w-6 h-6" />
-              <span class="text-xs mt-1">{item.label}</span>
-            </a>
-          ))}
+      </header>
+
+      <main>
+        <Home />
+        <About />
+        <Projects />
+        <ToolsFrameworks />
+        <Contacts action={action} />
+      </main>
+
+      <footer class="w-full bg-ink text-mist">
+        <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm sm:flex-row">
+          <span class="flex items-center gap-2.5">
+            <img src="/favicon.png" alt="" width={24} height={24} class="h-6 w-6 rounded-md object-cover" />© {new Date().getFullYear()} Cris Jr. T. Fandiño
+          </span>
+          <a href="#home" class="rounded-md transition-colors hover:text-white">
+            Back to top ↑
+          </a>
         </div>
-      </nav>
-      <footer class="w-full py-4 bg-gray-900 border-t text-center text-gray-100 text-sm z-40">
-        © {new Date().getFullYear()} Cris Jr. T. Fandiño. All rights reserved.
       </footer>
     </div>
   );

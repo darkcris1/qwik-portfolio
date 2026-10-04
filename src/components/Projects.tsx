@@ -1,8 +1,6 @@
 import { component$, useSignal, $ } from "@qwik.dev/core";
-import type { Slide } from "yet-another-react-lightbox"; // Import Slide type
-import { QwikLightbox } from "./ReactLightbox";
+import { Lightbox } from "./Lightbox";
 import { TimelineCard } from './TimelineCard';
-import ParticlesBackground from '../integrations/react/ParticlesBackground';
 import { ArchiveProjects } from "~/integrations/react/ArchiveProjects";
 
 interface Project {
@@ -14,7 +12,6 @@ interface Project {
   frameworks: string[];
   mainImage: string;
   previewImages?: string[]; // URLs for small previews
-  lightboxImages?: Slide[]; // Formatted for yet-another-react-lightbox
 }
 
 const projectsData: Project[] = [
@@ -32,11 +29,6 @@ const projectsData: Project[] = [
       "/assets/images/showcase/pdo-2.png",
       "/assets/images/showcase/pdo-3.png",
     ],
-    lightboxImages: [ // Prepare slides for the lightbox
-      { src: "/assets/images/showcase/pdo-1.png", },
-      { src: "/assets/images/showcase/pdo-2.png", },
-      { src: "/assets/images/showcase/pdo-3.png", },
-    ],
   },
   {
     id: "hrms",
@@ -50,11 +42,6 @@ const projectsData: Project[] = [
       "/assets/images/showcase/hrms.png",
       "/assets/images/showcase/hrms-2.png",
       "/assets/images/showcase/hrms-3.png",
-    ],
-    lightboxImages: [ // Prepare slides for the lightbox
-      { src: "/assets/images/showcase/hrms.png", },
-      { src: "/assets/images/showcase/hrms-2.png", },
-      { src: "/assets/images/showcase/hrms-3.png", },
     ],
   },
   
@@ -72,11 +59,6 @@ const projectsData: Project[] = [
       "/assets/images/showcase/ems2.webp",
       "/assets/images/showcase/ems3.png",
     ],
-    lightboxImages: [
-      { src: "/assets/images/showcase/ems1.png", },
-      { src: "/assets/images/showcase/ems2.webp",  },
-      { src: "/assets/images/showcase/ems3.png",  },
-    ],
   },
   {
     id: "hmkey",
@@ -90,10 +72,6 @@ const projectsData: Project[] = [
     previewImages: [
       "/assets/images/showcase/hms1.png",
       "/assets/images/showcase/hms2.webp",
-    ],
-    lightboxImages: [
-      { src: "/assets/images/showcase/hms1.png", },
-      { src: "/assets/images/showcase/hms2.webp", },
     ],
   },
   {
@@ -110,11 +88,6 @@ const projectsData: Project[] = [
       "/assets/images/showcase/tk-m-2.png",
       "/assets/images/showcase/tk-m-3.webp",
     ],
-    lightboxImages: [
-      { src: "/assets/images/showcase/tk-m-1.png", },
-      { src: "/assets/images/showcase/tk-m-2.png", },
-      { src: "/assets/images/showcase/tk-m-3.webp", },
-    ],
   },
   {
     id: "dataconnect-tracker",
@@ -127,9 +100,6 @@ const projectsData: Project[] = [
     mainImage: "/assets/images/showcase/scrumban.png",
     previewImages: [
       "/assets/images/showcase/scrumban3.png",
-    ],
-    lightboxImages: [
-      { src: "/assets/images/showcase/scrumban3.png", },
     ],
   },
   {
@@ -145,11 +115,6 @@ const projectsData: Project[] = [
       "/assets/images/showcase/scrumban2.png",
       "/assets/images/showcase/scrumban3.png",
     ],
-    lightboxImages: [
-      { src: "/assets/images/showcase/scrumban.png", },
-      { src: "/assets/images/showcase/scrumban2.png", },
-      { src: "/assets/images/showcase/scrumban3.png", },
-    ],
   },
   {
     id: "checksuite",
@@ -162,118 +127,121 @@ const projectsData: Project[] = [
     previewImages: [
       "/assets/images/showcase/scrumban3.png",
     ],
-    lightboxImages: [
-      { src: "/assets/images/showcase/scrumban3.png", },
-    ],
   },
   
 ];
 
 export default component$(() => {
-  const isLightboxOpen = useSignal(false);
-  // Store the slides for the currently active project's lightbox
-  const currentLightboxSlides = useSignal<Slide[]>([]);
-  // Store the index of the image to open in the lightbox
-  const currentLightboxIndex = useSignal(0);
+  const lightbox = useSignal<{ title: string; images: string[]; index: number } | null>(null);
 
-  const openLightbox = $((projectSlides: Slide[], index: number) => {
-    currentLightboxSlides.value = projectSlides;
-    currentLightboxIndex.value = index;
-    isLightboxOpen.value = true;
+  const openLightbox = $((title: string, images: string[], index: number) => {
+    lightbox.value = { title, images, index };
   });
 
   const closeLightbox = $(() => {
-    isLightboxOpen.value = false;
+    lightbox.value = null;
   });
 
   return (
-    <>
+    <section id="projects" class="w-full overflow-x-clip bg-white">
+      <div class="mx-auto max-w-6xl px-4 py-24 md:py-32">
+        <p class="eyebrow">Selected work</p>
+        <h2 class="mt-5 max-w-2xl font-display text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">
+          Systems I've built for real businesses.
+        </h2>
 
-    <section id="projects" class="relative w-full overflow-hidden py-16 my-15 md:px-32 px-4 bg-gray-50 max-w-[1280px]">
-    <ParticlesBackground />
-      
-        <h2 class="absolute top-0 left-1/2 transform -translate-x-1/2 text-4xl font-bold bg-gradient-to-r  bg-clip-text text-transparent text-center">
-            <span
-              class="text-blue-700 animate-glow-medium"
-            >
-              Projects
-            </span>
-          </h2>
-        {/* Central timeline line */}
-        <div class="absolute  left-1/2 top-12 h-[94%] w-1 bg-gray-300 z-0" style={{ transform: 'translateX(-50%)' }}></div>
-        <div class="mt-10">
-          <div class="relative z-10 flex flex-col gap-16">
-            {projectsData.slice(0,5).map((project, idx) => (
-              <TimelineCard
-                key={project.id}
-                alignment={idx % 2 === 0 ? 'left' : 'right'}
-                classes={`w-full flex ${idx % 2 === 0 ? 'justify-start' : 'justify-end'} items-center relative`}
-              >
-                {/* Connecting line from card to center timeline */}
-                <div
-                  class={`bg-gray-300 h-1 absolute z-0 top-1/2 ${idx % 2 === 0 ? 'left-0' : 'right-0'} z-10`}
-                  style={{
-                    width: 'calc(100% - 630px)',
-                    transform: 'translateY(-50%)',
-                  }}
-                ></div>
-                {/* Card content here */}
-                <div class="bg-white z-100 text-gray-800 p-6 md:p-8 rounded-lg shadow-2xl max-w-xl w-full border border-gray-200">
-                  <h3 class="text-2xl font-bold mb-2 text-blue-700">{project.title}</h3>
-                  <p class="text-sm text-gray-600 mb-1 font-semibold">Role: {project.role}</p>
-                  <p class="text-gray-700 mb-4 leading-relaxed">{project.description}</p>
-                  <div class="mb-2">
-                    <span class="text-sm font-semibold text-gray-700">Frameworks:&nbsp;</span>
-                    {project.frameworks.map((fw, i) => (
-                      <span key={i} class="inline-block bg-blue-100 text-blue-700 px-2 py-1 rounded mr-2 text-xs font-medium">
-                        {fw}
+        <div class="mt-16 flex flex-col gap-24 md:mt-20 md:gap-32">
+          {projectsData.slice(0, 5).map((project, idx) => (
+            <TimelineCard key={project.id} alignment={idx % 2 === 0 ? "left" : "right"}>
+              <article class="grid items-center gap-8 md:grid-cols-2 md:gap-14">
+                <div class={idx % 2 === 1 ? "md:order-2" : ""}>
+                  <div class="overflow-hidden rounded-2xl border border-line bg-ice shadow-2xl shadow-ink/10">
+                    <div class="flex items-center gap-1.5 border-b border-line bg-white px-4 py-2.5">
+                      <span class="h-2.5 w-2.5 rounded-full bg-line" />
+                      <span class="h-2.5 w-2.5 rounded-full bg-line" />
+                      <span class="h-2.5 w-2.5 rounded-full bg-line" />
+                      <span class="ml-3 truncate font-mono text-[11px] text-muted">
+                        {project.liveLink ? new URL(project.liveLink).host : "internal tool"}
                       </span>
-                    ))}
+                    </div>
+                    <button
+                      type="button"
+                      class="group block w-full cursor-zoom-in overflow-hidden"
+                      aria-label={`Open ${project.title} screenshots`}
+                      data-index={0}
+                      // Capturing the map index in slotted content hangs Qwik v2 rc.0 SSR.
+                      onClick$={(_, el) => openLightbox(project.title, project.previewImages?.length ? project.previewImages : [project.mainImage], Number(el.dataset.index))}
+                    >
+                      <img
+                        src={project.previewImages?.[0] ?? project.mainImage}
+                        alt=""
+                        width={640}
+                        height={400}
+                        loading="lazy"
+                        class="aspect-[16/10] w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    </button>
                   </div>
+                  {(project.previewImages?.length ?? 0) > 1 && (
+                    <ul class="mt-4 flex gap-3">
+                      {project.previewImages!.map((imgSrc, index) => (
+                        <li key={imgSrc}>
+                          <button
+                            type="button"
+                            class="block overflow-hidden rounded-lg border border-muted/35 bg-white p-1 shadow-sm shadow-ink/10 transition hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
+                            aria-label={`Open ${project.title} screenshot ${index + 1}`}
+                            data-index={index}
+                            onClick$={(_, el) => openLightbox(project.title, project.previewImages?.length ? project.previewImages : [project.mainImage], Number(el.dataset.index))}
+                          >
+                            <img src={imgSrc} alt="" width={96} height={60} loading="lazy" class="h-12 w-20 rounded-md object-cover object-top md:h-14 md:w-24" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div>
+                  <p class="font-mono text-xs uppercase tracking-[0.18em] text-brand-ink">{project.role}</p>
+                  <h3 class="mt-3 font-display text-2xl font-bold leading-snug tracking-tight text-ink md:text-3xl">
+                    {project.title}
+                  </h3>
+                  <p class="mt-4 leading-relaxed text-muted">{project.description}</p>
+                  <ul class="mt-6 flex flex-wrap gap-2" aria-label="Built with">
+                    {project.frameworks.map((fw) => (
+                      <li key={fw} class="rounded-md border border-line bg-ice px-2.5 py-1 font-mono text-xs text-ink/80">
+                        {fw}
+                      </li>
+                    ))}
+                  </ul>
                   {project.liveLink && (
                     <a
                       href={project.liveLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="inline-block mb-3 px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition-colors text-sm font-semibold"
+                      class="mt-7 inline-flex items-center gap-1.5 font-semibold text-brand-ink underline-offset-4 hover:underline"
                     >
-                      Live Site
+                      Visit live site <span aria-hidden="true">↗</span>
+                      <span class="sr-only">(opens in new tab)</span>
                     </a>
                   )}
-                  <h4 class="text-lg font-semibold text-gray-700 mb-2">Preview Gallery</h4>
-                  <div class="grid grid-cols-3 gap-2 mb-2">
-                    {project.previewImages?.map((imgSrc, index) => (
-                      <img
-                        key={index}
-                        src={imgSrc}
-                        alt={`${project.title} preview ${index + 1}`}
-                        width={120}
-                        height={90}
-                        loading="lazy"
-                        class="w-full h-20 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity border"
-                        data-index={index}
-                        // Capturing the map index in slotted content hangs Qwik v2 rc.0 SSR.
-                        onClick$={(_, el) => openLightbox(project.lightboxImages || [], Number(el.dataset.index))}
-                      />
-                    ))}
-                  </div>
                 </div>
-              </TimelineCard>
-            ))}
-          </div>
-          {isLightboxOpen.value && (
-            <QwikLightbox
-              open={isLightboxOpen.value}
-              close={closeLightbox}
-              slides={currentLightboxSlides.value}
-              index={currentLightboxIndex.value}
-            />
-          )}
-
+              </article>
+            </TimelineCard>
+          ))}
         </div>
-          
-        <ArchiveProjects projects={projectsData.slice(5)}></ArchiveProjects>
-      </section>
-    </>
+
+        {lightbox.value && (
+          <Lightbox
+            title={lightbox.value.title}
+            images={lightbox.value.images}
+            startIndex={lightbox.value.index}
+            onClose$={closeLightbox}
+          />
+        )}
+
+        <ArchiveProjects projects={projectsData.slice(5)} />
+      </div>
+    </section>
   );
 });

@@ -1,6 +1,6 @@
-/** @jsxImportSource react */ // Add this pragma at the top
+/** @jsxImportSource react */
 
-import React, { useState, useEffect, useCallback } from 'react'; // Use 'type ElementType'
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from "motion/react";
 import { qwikify$ } from '@qwik.dev/react';
 
@@ -12,99 +12,126 @@ const ReactArchiveProjects: React.FC<ReactArchiveProjectsProps> = ({
   projects,
 }): React.JSX.Element => {
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
-
-  // Handle Escape key to close modal
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      setIsArchiveOpen(false);
-    }
-  }, []);
+  const openButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const wasOpen = useRef(false);
 
   useEffect(() => {
-    if (isArchiveOpen) {
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
+    if (!isArchiveOpen) {
+      // Send focus back to the button that opened the dialog.
+      if (wasOpen.current) openButtonRef.current?.focus();
+      wasOpen.current = false;
+      return;
     }
-  }, [isArchiveOpen, handleKeyDown]);
+    wasOpen.current = true;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsArchiveOpen(false);
+      if (e.key !== 'Tab' || !dialogRef.current) return;
+      // Keep Tab cycling inside the dialog.
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>('a[href], button');
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isArchiveOpen]);
 
   return (
     <>
-    <div className="mt-20 flex items-center justify-center">
-          <button
-            className="cursor-pointer z-50 mt-5 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-70"
-            onClick={() => (setIsArchiveOpen(true))}
+      <div className="mt-24 flex flex-col items-center gap-4 text-center">
+        <p className="text-muted">Plus {projects.length} more projects in the archive.</p>
+        <button
+          ref={openButtonRef}
+          type="button"
+          className="cursor-pointer rounded-xl border border-line bg-white px-5 py-3 text-sm font-semibold text-ink shadow-sm transition-colors hover:border-brand hover:text-brand-ink"
+          onClick={() => setIsArchiveOpen(true)}
+        >
+          View archive
+        </button>
+      </div>
+      <AnimatePresence initial={false}>
+        {isArchiveOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-ink/60 p-4 backdrop-blur-sm"
+            onClick={() => setIsArchiveOpen(false)}
           >
-            View Archive
-          </button>
-        </div>
-        <AnimatePresence initial={false}>
-          {/* Archive Modal with motion/react animation */}
-          {isArchiveOpen && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.1 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+              ref={dialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="archive-title"
+              initial={{ opacity: 0, y: 24, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 24, scale: 0.98 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="relative max-h-[85vh] w-full max-w-3xl overflow-auto rounded-3xl bg-white p-6 shadow-2xl md:p-8"
+              onClick={(e) => e.stopPropagation()}
             >
-              <motion.div
-                initial={{ opacity: 0, y: -100 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 100 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white rounded-lg shadow-2xl max-w-3xl w-full p-6 relative"
-              >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="eyebrow">Archive</p>
+                  <h3 id="archive-title" className="mt-3 font-display text-2xl font-bold tracking-tight text-ink">
+                    More projects
+                  </h3>
+                </div>
                 <button
-                  className="absolute top-2 right-2 cursor-pointer text-gray-500 hover:text-gray-700 text-2xl font-bold"
-                  onClick={() => (setIsArchiveOpen(false))}
-                  aria-label="Close"
+                  type="button"
+                  autoFocus
+                  className="grid h-10 w-10 cursor-pointer place-items-center rounded-xl text-2xl text-muted transition-colors hover:bg-ice hover:text-ink"
+                  onClick={() => setIsArchiveOpen(false)}
+                  aria-label="Close archive"
                 >
                   &times;
                 </button>
-                <h3 className="text-xl font-bold mb-4 text-blue-700">Archive Projects</h3>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm border-separate border-spacing-y-2">
-                    <thead>
-                      <tr className="bg-gradient-to-r from-blue-50 to-blue-100">
-                        <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider rounded-tl-lg">Title</th>
-                        <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider rounded-tl-lg">Description</th>
-                        <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Role</th>
-                        <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {projects.map((project) => (
-                        <tr key={project.id} className="bg-white shadow-md hover:shadow-lg transition-shadow rounded-lg">
-                          <td className="px-6 py-4 font-semibold text-gray-800 rounded-l-lg border-y border-gray-100">{project.title}</td>
-                          <td className="px-6 py-4 text-gray-600 border-y border-gray-100">{project.description}</td>
-                          <td className="px-6 py-4 text-gray-600 border-y border-gray-100">{project.role}</td>
-                          <td className="px-6 py-4 text-gray-600 border-y border-gray-100">
-                            {project.liveLink && <a
-                              target='_blank'
-                              rel='noopener noreferrer' 
-                              className='text-blue-600 hover:text-blue-800 mr-2 underline'
-                              href={project.liveLink}>
-                              Live
-                            </a>}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </motion.div>
+              </div>
+              <ul className="mt-6 divide-y divide-line">
+                {projects.map((project) => (
+                  <li key={project.id} className="grid gap-2 py-5 md:grid-cols-[1fr_auto] md:gap-6">
+                    <div>
+                      <p className="font-mono text-xs uppercase tracking-[0.18em] text-brand-ink">{project.role}</p>
+                      <h4 className="mt-1.5 text-lg font-semibold text-ink">{project.title}</h4>
+                      <p className="mt-1.5 leading-relaxed text-muted">{project.description}</p>
+                    </div>
+                    {project.liveLink && (
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="self-start font-semibold text-brand-ink underline-offset-4 hover:underline"
+                        href={project.liveLink}
+                      >
+                        Visit site <span aria-hidden="true">↗</span>
+                        <span className="sr-only">(opens in new tab)</span>
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </motion.div>
-          )}
-        </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
 
 export const ArchiveProjects = qwikify$<ReactArchiveProjectsProps>(
   ReactArchiveProjects,
-  {
-    // `eagerness: 'visible'` ensures the React component hydrates when it becomes visible,
-    // which is suitable for `whileInView` animations.
-    eagerness: 'visible', // Corrected option
-  }
+  { eagerness: 'visible' }
 );

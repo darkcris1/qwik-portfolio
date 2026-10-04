@@ -9,7 +9,7 @@ export const TimelineCard = component$<TimelineCardProps>(({ alignment, classes 
   const ref = useSignal<HTMLDivElement>();
   const inView = useSignal(false);
 
-  // Slide the card in once it scrolls 100px into the viewport.
+  // Slide the card in once it is 100px inside the viewport.
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(({ cleanup }) => {
     const observer = new IntersectionObserver(
@@ -25,7 +25,7 @@ export const TimelineCard = component$<TimelineCardProps>(({ alignment, classes 
     cleanup(() => observer.disconnect());
   });
 
-  const hidden = alignment === "left" ? "opacity-0 -translate-x-[100px]" : "opacity-0 translate-x-[100px]";
+  const hidden = alignment === "left" ? "opacity-0 -translate-x-12" : "opacity-0 translate-x-12";
 
   return (
     <div

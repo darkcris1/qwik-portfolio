@@ -5,11 +5,27 @@ export default component$(() => {
   const years = getYearsOfExperience();
 
   return (
-    <section id="about" class="w-full max-w-xl mx-auto pb-12 pt-0 px-4">
-      <h2 class="text-2xl font-bold mb-2 text-gray-900">About Me</h2>
-      <p class="text-gray-700">
-        I am a passionate fullstack developer with over {years} years of experience in building scalable web applications and enterprise solutions. My expertise spans across the entire development stack, including Django, Python, JavaScript, Svelte, React, PostgreSQL, Redis, Docker, and Nginx. I have a proven track record of delivering high-quality, performant applications that solve complex business problems. I'm particularly interested in system architecture, optimization, and creating maintainable codebases. When I'm not coding, I enjoy learning new things and staying up-to-date with the latest technology trends. I thrive in collaborative environments and take pride in mentoring junior developers while continuously learning from my peers.
-      </p>
+    <section id="about" class="w-full bg-ice">
+      <div class="mx-auto grid max-w-6xl gap-10 px-4 py-24 md:grid-cols-[0.85fr_1.15fr] md:gap-16 md:py-32">
+        <div>
+          <p class="eyebrow">About</p>
+          <h2 class="mt-5 font-display text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">
+            I work across the whole stack.
+          </h2>
+        </div>
+        <div class="space-y-5 text-lg leading-relaxed text-muted">
+          <p>
+            I'm a full stack developer with over {years} years of experience building scalable web
+            applications and enterprise systems, using Django, Python, JavaScript, Svelte, React,
+            PostgreSQL, Redis, Docker and Nginx.
+          </p>
+          <p>
+            I care most about system architecture, performance and code that stays easy to change.
+            I like working closely with a team, mentoring junior developers, and keeping up with
+            what's new in the tools I use.
+          </p>
+        </div>
+      </div>
     </section>
   );
 });
