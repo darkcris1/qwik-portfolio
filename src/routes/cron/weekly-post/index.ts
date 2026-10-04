@@ -41,8 +41,8 @@ const generatePost = async (apiKey: string, model: string, recentTitles: string)
           },
           required: ["title", "description", "content_html"],
         },
-        // Skip thinking so the reply lands inside Vercel's edge time limit.
-        thinkingConfig: { thinkingBudget: 0 },
+        // Keep thinking low so the reply lands inside Vercel's edge time limit.
+        thinkingConfig: { thinkingLevel: "low" },
       },
     }),
   });
@@ -88,7 +88,7 @@ export const onPost: RequestHandler = async (requestEv) => {
     if (recentError) throw recentError;
     const recentTitles = recent.map((p) => `- ${p.title}`).join("\n") || "(none yet)";
 
-    const post = await generatePost(apiKey, env.get("GEMINI_MODEL") || "gemini-2.5-flash", recentTitles);
+    const post = await generatePost(apiKey, env.get("GEMINI_MODEL") || "gemini-3.8-flash", recentTitles);
     const baseSlug = slugify(post.title) || `post-${Date.now()}`;
     const input = {
       title: post.title.slice(0, 200),
