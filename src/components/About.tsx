@@ -20,7 +20,7 @@ const focusAreas = [
 ];
 
 export default component$(() => {
-  const years = getYearsOfExperience();
+  const { years, over } = getYearsOfExperience();
 
   return (
     <section id="about" class="w-full bg-ice">
@@ -34,7 +34,7 @@ export default component$(() => {
           </div>
           <div class="space-y-5 text-lg leading-relaxed text-muted">
             <p>
-              I'm a full stack developer with over {years} years of experience building scalable web
+              I'm a full stack developer with {over ? "over " : ""}{years} years of experience building scalable web
               applications and enterprise systems, from the database and API to the interface and the
               cloud it runs on.
             </p>

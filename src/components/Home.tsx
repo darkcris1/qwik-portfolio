@@ -9,7 +9,7 @@ const socials = [
 ];
 
 export default component$(() => {
-  const years = getYearsOfExperience();
+  const { years, over } = getYearsOfExperience();
 
   return (
     <section id="home" class="relative isolate w-full overflow-hidden bg-ink text-white">
@@ -31,7 +31,7 @@ export default component$(() => {
             <span class="text-gradient">Fandiño</span>
           </h1>
           <p class="mt-7 max-w-xl text-lg leading-relaxed text-mist">
-            Over {years} years building web apps for real estate sales, HR and payroll, and live drone
+            {over ? "Over " : ""}{years} years building web apps for real estate sales, HR and payroll, and live drone
             tracking. Django and Python on the server, Angular, React or Svelte in the browser, AWS and
             Terraform underneath, and Claude Code in my workflow.
           </p>
