@@ -57,6 +57,18 @@ export const createPublicSupabase = (requestEv: RequestEventBase): SupabaseClien
   });
 };
 
+// Secret-key client that bypasses RLS, only for trusted server jobs.
+export const createServiceSupabase = (requestEv: RequestEventBase): SupabaseClient => {
+  const url = requestEv.env.get("SUPABASE_URL");
+  const key = requestEv.env.get("SUPABASE_SECRET_KEY");
+  if (!url || !key) {
+    throw new Error("SUPABASE_URL and SUPABASE_SECRET_KEY must be set");
+  }
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
+};
+
 export interface AdminUser {
   email: string;
 }

@@ -1,0 +1,17 @@
+name: Weekly blog post
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # Mondays 08:00 Manila time
+  workflow_dispatch:
+
+jobs:
+  write-post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call weekly post endpoint
+        run: |
+          curl --fail-with-body -sSL -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ vars.SITE_URL }}/api/cron/weekly-post/"
