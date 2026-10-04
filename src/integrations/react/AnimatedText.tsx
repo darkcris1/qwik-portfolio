@@ -2,7 +2,7 @@
 
 import React, { type ElementType } from 'react'; // Use 'type ElementType'
 import { motion } from "motion/react";
-import { qwikify$ } from '@builder.io/qwik-react';
+import { qwikify$ } from '@qwik.dev/react';
 
 interface ReactAnimatedTextProps {
   text: string;

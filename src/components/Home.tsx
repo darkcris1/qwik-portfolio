@@ -1,4 +1,4 @@
-import { component$ } from "@builder.io/qwik";
+import { component$ } from "@qwik.dev/core";
 import { LinkedinIcon, GithubIcon, CodeIcon } from "qwik-feather-icons";
 import { getYearsOfExperience } from "~/lib/experience";
 

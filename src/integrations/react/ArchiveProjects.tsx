@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'; // Use 'type ElementType'
 import { motion, AnimatePresence } from "motion/react";
-import { qwikify$ } from '@builder.io/qwik-react';
+import { qwikify$ } from '@qwik.dev/react';
 
 interface ReactArchiveProjectsProps {
     projects: any[]

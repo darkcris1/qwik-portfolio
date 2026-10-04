@@ -1,7 +1,7 @@
 /** @jsxImportSource react */
 import React, { useRef, ReactNode } from 'react';
 import { motion, useScroll, useTransform, MotionValue, HTMLMotionProps } from 'motion/react';
-import { qwikify$ } from '@builder.io/qwik-react';
+import { qwikify$ } from '@qwik.dev/react';
 
 // Simplified Project interface for the React component.
 // In a larger app, you might import this from a shared types file.

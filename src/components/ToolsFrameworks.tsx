@@ -1,4 +1,4 @@
-import { component$ } from '@builder.io/qwik';
+import { component$ } from '@qwik.dev/core';
 // Remove ThreeScene import if no longer used, or keep if used elsewhere
 // import ThreeScene from './ThreeScene'; 
 import { AnimatedTools } from './AnimatedToolsQwik'; // Ensure this path is correct

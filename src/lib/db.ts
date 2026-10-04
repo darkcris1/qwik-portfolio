@@ -1,4 +1,4 @@
-import { RequestEventLoader } from "@builder.io/qwik-city";
+import { RequestEventLoader } from "@qwik.dev/router";
 import { createServerClient } from "supabase-auth-helpers-qwik";
 
 export const supabaseClient = (requestEv: RequestEventLoader<any>)=> { 

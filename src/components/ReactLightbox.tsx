@@ -1,4 +1,4 @@
-import { qwikify$ } from "@builder.io/qwik-react";
+import { qwikify$ } from "@qwik.dev/react";
 import Lightbox, { type Slide } from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 // Optional: Import plugins if you want to use them
@@ -13,6 +13,7 @@ interface ReactLightboxProps {
   open: boolean;
   close: () => void;
   slides: Slide[];
+  index?: number;
   // Add other props from yet-another-react-lightbox as needed
   // e.g., index, plugins, etc.
 }

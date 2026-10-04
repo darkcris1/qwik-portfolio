@@ -1,6 +1,6 @@
 /** @jsxImportSource react */
 
-import { qwikify$ } from "@builder.io/qwik-react";
+import { qwikify$ } from "@qwik.dev/react";
 import Particles, { ParticlesProvider, useParticlesProvider } from "@tsparticles/react";
 import { useMemo } from "react";
 import { loadSlim } from "@tsparticles/slim";

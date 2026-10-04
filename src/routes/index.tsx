@@ -1,20 +1,15 @@
-import { component$ } from "@builder.io/qwik";
-import type { DocumentHead } from "@builder.io/qwik-city";
+import { component$ } from "@qwik.dev/core";
+import type { DocumentHead } from "@qwik.dev/router";
 import { HomeIcon, UserIcon, FolderIcon, MailIcon, CpuIcon } from "qwik-feather-icons"; // Added CpuIcon
 import Home from "~/components/Home";
 import About from "~/components/About";
 import Projects from "~/components/Projects";
 import Contacts from "~/components/Contacts";
 import ToolsFrameworks from "~/components/ToolsFrameworks"; // Import the new component
-import { routeAction$ } from '@builder.io/qwik-city';
+import { routeAction$ } from '@qwik.dev/router';
 import { handleContactForm } from "~/lib/hooks/contact-api";
 import { MenuIcon, XIcon } from "qwik-feather-icons";
-import { useVisibleTask$, useSignal } from "@builder.io/qwik";
-import { qwikify$ } from "@builder.io/qwik-react";
-import { motion, AnimatePresence as AP } from "motion/react";
-
-const MotionDiv = qwikify$(motion.div)
-const AnimatePresence = qwikify$(AP)
+import { useVisibleTask$, useSignal } from "@qwik.dev/core";
 
 // Define the action to handle the POST request
 export const useMyAction = routeAction$(async (data, { fail }) => {
@@ -140,37 +135,36 @@ export default component$(() => {
           { navOpen.value && <XIcon class="w-8 h-8 text-gray-700" />}
         </button>
         {/* Mobile nav menu, slides down from below the burger icon */}
-        <AnimatePresence>
-          {navOpen.value && (
-            <MotionDiv
-              key="modal"
-              className="absolute top-full left-0 mt-2 origin-top-left"
-              initial={{ opacity: 0, y: -20, scale: 0.85 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.85 }}>
-              <div class="flex flex-col bg-white shadow-lg rounded-full px-3 py-6 gap-6 border border-gray-200">
-                {navItems.map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    data-scrollto={item.scrollTo}
-                    aria-current={currentSection.value === item.scrollTo ? "page" : undefined}
-                    onClick$={() => (navOpen.value = false)}
-                    class={
-                      "flex flex-col items-center transition-colors duration-200 " +
-                      (currentSection.value === item.scrollTo
-                        ? "text-blue-600 font-bold"
-                        : "text-gray-500 hover:text-blue-600")
-                    }
-                  >
-                    <item.icon class="w-6 h-6" />
-                    <span class="text-xs mt-1">{item.label}</span>
-                  </a>
-                ))}
-              </div>
-            </MotionDiv>
-          )}
-        </AnimatePresence>
+        <div
+          inert={!navOpen.value}
+          class={
+            "absolute top-full left-0 mt-2 origin-top-left transition-all duration-200 ease-out " +
+            (navOpen.value
+              ? "opacity-100 translate-y-0 scale-100"
+              : "opacity-0 -translate-y-5 scale-[0.85] pointer-events-none")
+          }
+        >
+          <div class="flex flex-col bg-white shadow-lg rounded-full px-3 py-6 gap-6 border border-gray-200">
+            {navItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                data-scrollto={item.scrollTo}
+                aria-current={currentSection.value === item.scrollTo ? "page" : undefined}
+                onClick$={() => (navOpen.value = false)}
+                class={
+                  "flex flex-col items-center transition-colors duration-200 " +
+                  (currentSection.value === item.scrollTo
+                    ? "text-blue-600 font-bold"
+                    : "text-gray-500 hover:text-blue-600")
+                }
+              >
+                <item.icon class="w-6 h-6" />
+                <span class="text-xs mt-1">{item.label}</span>
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
       {/* Desktop/Tablet sidebar nav */}
       <nav class="fixed top-1/2 left-6 -translate-y-1/2 z-50 hidden md:block">

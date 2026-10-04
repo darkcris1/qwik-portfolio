@@ -1,7 +1,7 @@
-import { component$, useSignal, $ } from "@builder.io/qwik";
+import { component$, useSignal, $ } from "@qwik.dev/core";
 import type { Slide } from "yet-another-react-lightbox"; // Import Slide type
 import { QwikLightbox } from "./ReactLightbox";
-import { QwikTimelineProjectCard } from '../integrations/react/QwikTimelineProjectCard';
+import { TimelineCard } from './TimelineCard';
 import ParticlesBackground from '../integrations/react/ParticlesBackground';
 import { ArchiveProjects } from "~/integrations/react/ArchiveProjects";
 
@@ -204,7 +204,7 @@ export default component$(() => {
         <div class="mt-10">
           <div class="relative z-10 flex flex-col gap-16">
             {projectsData.slice(0,5).map((project, idx) => (
-              <QwikTimelineProjectCard
+              <TimelineCard
                 key={project.id}
                 alignment={idx % 2 === 0 ? 'left' : 'right'}
                 classes={`w-full flex ${idx % 2 === 0 ? 'justify-start' : 'justify-end'} items-center relative`}
@@ -251,12 +251,14 @@ export default component$(() => {
                         height={90}
                         loading="lazy"
                         class="w-full h-20 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity border"
-                        onClick$={() => openLightbox(project.lightboxImages || [], index)}
+                        data-index={index}
+                        // Capturing the map index in slotted content hangs Qwik v2 rc.0 SSR.
+                        onClick$={(_, el) => openLightbox(project.lightboxImages || [], Number(el.dataset.index))}
                       />
                     ))}
                   </div>
                 </div>
-              </QwikTimelineProjectCard>
+              </TimelineCard>
             ))}
           </div>
           {isLightboxOpen.value && (
@@ -264,6 +266,7 @@ export default component$(() => {
               open={isLightboxOpen.value}
               close={closeLightbox}
               slides={currentLightboxSlides.value}
+              index={currentLightboxIndex.value}
             />
           )}
 
