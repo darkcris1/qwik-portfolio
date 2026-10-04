@@ -62,7 +62,7 @@ const generatePost = async (apiKey: string, model: string, recentTitles: string)
   return post;
 };
 
-// Called once a week by .github/workflows/weekly-post.yml.
+// Called once a week by .github/workflows/weekly-post.yml; kept out of /api since Vercel sends that to the root api/ folder.
 export const onPost: RequestHandler = async (requestEv) => {
   const { env, request, json } = requestEv;
   const secret = env.get("CRON_SECRET");
