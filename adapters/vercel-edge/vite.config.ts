@@ -11,6 +11,10 @@ export default extendConfig(baseConfig, () => {
       },
       outDir: ".vercel/output/functions/_qwik-router.func",
     },
+    // React's browser server build needs MessageChannel, which Vercel Edge lacks.
+    resolve: {
+      alias: [{ find: /^react-dom\/server$/, replacement: "react-dom/server.edge" }],
+    },
     // The dynamic /sitemap.xml route lists blog posts, so skip the static one.
     plugins: [vercelEdgeAdapter({ ssg: { sitemapOutFile: null } })],
   };
