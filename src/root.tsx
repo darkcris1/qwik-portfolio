@@ -27,6 +27,13 @@ export default component$(() => {
             href={`${import.meta.env.BASE_URL}manifest.json`}
           />
         )}
+        {!isDev && (
+          <script
+            defer
+            src="https://cloud.umami.is/script.js"
+            data-website-id="917ea9b6-3a12-4a20-8c9e-49c8e3d74056"
+          />
+        )}
         <RouterHead />
       </head>
       <body lang="en">
