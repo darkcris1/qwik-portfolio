@@ -62,7 +62,7 @@ const generatePost = async (apiKey: string, model: string, recentTitles: string)
   return post;
 };
 
-// Called once a week by .github/workflows/weekly-post.yml; kept out of /api since Vercel sends that to the root api/ folder.
+// Called every 3 days by .github/workflows/weekly-post.yml; kept out of /api since Vercel sends that to the root api/ folder.
 export const onPost: RequestHandler = async (requestEv) => {
   const { env, request, json } = requestEv;
   const secret = env.get("CRON_SECRET");
@@ -109,7 +109,7 @@ export const onPost: RequestHandler = async (requestEv) => {
 
     json(200, { ok: true, id: data?.id, title: post.title, status });
   } catch (err) {
-    console.error("Weekly post failed", err);
+    console.error("Scheduled post failed", err);
     json(500, { error: err instanceof Error ? err.message : String(err) });
   }
 };
