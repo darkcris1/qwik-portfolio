@@ -8,7 +8,7 @@ on:
 jobs:
   write-post:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Call blog post endpoint
         # JSON content type skips Qwik's CSRF check, which only guards form posts.
@@ -18,8 +18,11 @@ jobs:
             echo "Not a posting day, skipping."
             exit 0
           fi
-          curl --fail-with-body -sSL -X POST \
+          # The endpoint streams, so a failure still comes back as 200 with "ok": false.
+          out=$(curl --fail-with-body -sSL -X POST \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json" \
             -d '{}' \
-            "${{ vars.SITE_URL }}/cron/weekly-post/"
+            "${{ vars.SITE_URL }}/cron/weekly-post/") || { echo "$out"; exit 1; }
+          echo "$out"
+          echo "$out" | grep -q '"ok":true'

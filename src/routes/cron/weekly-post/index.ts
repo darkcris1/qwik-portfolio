@@ -84,6 +84,14 @@ export const onPost: RequestHandler = async (requestEv) => {
     throw json(500, { error: "GEMINI_API_KEY is not set" });
   }
 
+  // Gemini often takes longer than Edge's 25s first-byte limit, so send spaces while it works.
+  requestEv.headers.set("content-type", "application/json");
+  const writer = requestEv.getWritableStream().getWriter();
+  const encoder = new TextEncoder();
+  await writer.write(encoder.encode(" "));
+  const heartbeat = setInterval(() => writer.write(encoder.encode(" ")).catch(() => {}), 10_000);
+
+  let result: Record<string, unknown> | undefined;
   try {
     const supabase = createServiceSupabase(requestEv);
     const status = env.get("POST_STATUS")?.trim().toLowerCase() === "draft" ? "draft" : "published";
@@ -128,12 +136,18 @@ export const onPost: RequestHandler = async (requestEv) => {
     }
     if (error) throw error;
 
-    json(200, { ok: true, id: data?.id, title: post.title, topic, status });
+    result = { ok: true, id: data?.id, title: post.title, topic, status };
   } catch (err) {
     console.error("Scheduled post failed", err);
     // Supabase errors are plain objects with a message, not Error instances.
     const raw = typeof err === "object" && err && "message" in err ? err.message : undefined;
     const message = typeof raw === "string" && raw ? raw : err instanceof Object ? JSON.stringify(err) : String(err);
-    json(500, { error: message });
+    result = { ok: false, error: message };
+  } finally {
+    clearInterval(heartbeat);
+    // The status is already 200 once streaming starts, so callers check "ok" instead.
+    const body = result ?? { ok: false, error: "Unexpected failure while building the result" };
+    await writer.write(encoder.encode(JSON.stringify(body))).catch(() => {});
+    await writer.close().catch(() => {});
   }
 };
