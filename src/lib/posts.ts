@@ -24,6 +24,7 @@ export interface PostInput {
   content_html: string;
   og_image_url: string | null;
   status: "draft" | "published";
+  topic?: string | null;
 }
 
 const SUMMARY_COLUMNS = "id, slug, title, description, status, published_at, updated_at";

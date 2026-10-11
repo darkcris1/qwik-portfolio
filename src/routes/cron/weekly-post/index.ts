@@ -1,4 +1,5 @@
 import type { RequestHandler } from "@qwik.dev/router";
+import { BLOG_TOPICS } from "~/lib/blog-topics";
 import { savePost } from "~/lib/posts";
 import { slugify } from "~/lib/slug";
 import { createServiceSupabase } from "~/lib/supabase";
@@ -10,14 +11,16 @@ interface GeneratedPost {
 }
 
 const SYSTEM_PROMPT =
-  "You write blog posts for the personal site of Cris Fandiño, a full stack developer who works with " +
-  "Django, Python, TypeScript, Svelte, React, Qwik, PostgreSQL, AWS, Terraform, Docker and Claude Code. " +
-  "Write practical, first-person posts for other developers: one focused idea, real code examples, no fluff. " +
+  "You write blog posts for the personal site of Cris Fandiño, a full stack developer. " +
+  "Each post covers only the one topic you're given; don't drift into other tools or subjects. " +
+  "Write practical, first-person posts for other developers: one focused idea, real code or config examples where they fit, no fluff. " +
+  "He has built web apps since 2021 with Django, Python, TypeScript, Angular, React, Svelte, Qwik, PostgreSQL, AWS, Terraform and Docker. " +
+  "Don't invent employers, clients, team names, metrics, dates or personal history; when you lack a fact, speak in general terms. " +
   "Title under 100 characters. Description is one or two sentences under 280 characters. " +
   "content_html is 600 to 900 words using only p, h2, h3, ul, ol, li, strong, em, a, blockquote, pre and code tags. " +
   "HTML-escape <, > and & inside pre and code blocks. Do not repeat the title as a heading.";
 
-const generatePost = async (apiKey: string, model: string, recentTitles: string): Promise<GeneratedPost> => {
+const generatePost = async (apiKey: string, model: string, topic: string, pastTitles: string): Promise<GeneratedPost> => {
   const today = new Date().toISOString().slice(0, 10);
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
     method: "POST",
@@ -27,7 +30,13 @@ const generatePost = async (apiKey: string, model: string, recentTitles: string)
       contents: [
         {
           role: "user",
-          parts: [{ text: `Write today's post (${today}). Pick a topic not covered by these recent posts:\n${recentTitles}` }],
+          parts: [
+            {
+              text:
+                `Write today's post (${today}) about this topic only: ${topic}\n` +
+                `Pick an angle not already covered by these earlier posts on it:\n${pastTitles}`,
+            },
+          ],
         },
       ],
       generationConfig: {
@@ -77,18 +86,29 @@ export const onPost: RequestHandler = async (requestEv) => {
 
   try {
     const supabase = createServiceSupabase(requestEv);
-    const status = env.get("POST_STATUS") === "published" ? "published" : "draft";
+    const status = env.get("POST_STATUS")?.trim().toLowerCase() === "draft" ? "draft" : "published";
+    if (BLOG_TOPICS.length === 0) throw new Error("BLOG_TOPICS is empty");
 
-    // Recent titles go into the prompt so topics don't repeat.
-    const { data: recent, error: recentError } = await supabase
+    const { data: past, error: pastError } = await supabase
       .from("posts")
-      .select("title")
-      .order("created_at", { ascending: false })
-      .limit(50);
-    if (recentError) throw recentError;
-    const recentTitles = recent.map((p) => `- ${p.title}`).join("\n") || "(none yet)";
+      .select("title, topic, created_at")
+      .not("topic", "is", null)
+      .order("created_at", { ascending: false });
+    if (pastError) throw pastError;
 
-    const post = await generatePost(apiKey, env.get("GEMINI_MODEL") || "gemini-3.8-flash", recentTitles);
+    // Newest post date per topic; a topic with no posts yet goes first, otherwise the stalest one.
+    const lastUsed = new Map<string, string>();
+    for (const p of past) if (!lastUsed.has(p.topic)) lastUsed.set(p.topic, p.created_at);
+    const topic =
+      BLOG_TOPICS.find((t) => !lastUsed.has(t)) ??
+      [...BLOG_TOPICS].sort((a, b) => lastUsed.get(a)!.localeCompare(lastUsed.get(b)!))[0];
+    const pastTitles =
+      past
+        .filter((p) => p.topic === topic)
+        .map((p) => `- ${p.title}`)
+        .join("\n") || "(none yet)";
+
+    const post = await generatePost(apiKey, env.get("GEMINI_MODEL") || "gemini-3.8-flash", topic, pastTitles);
     const baseSlug = slugify(post.title) || `post-${Date.now()}`;
     const input = {
       title: post.title.slice(0, 200),
@@ -97,6 +117,7 @@ export const onPost: RequestHandler = async (requestEv) => {
       content_html: post.content_html,
       og_image_url: null,
       status,
+      topic,
     } as const;
 
     let { data, error } = await savePost(supabase, input);
@@ -107,7 +128,7 @@ export const onPost: RequestHandler = async (requestEv) => {
     }
     if (error) throw error;
 
-    json(200, { ok: true, id: data?.id, title: post.title, status });
+    json(200, { ok: true, id: data?.id, title: post.title, topic, status });
   } catch (err) {
     console.error("Scheduled post failed", err);
     json(500, { error: err instanceof Error ? err.message : String(err) });
