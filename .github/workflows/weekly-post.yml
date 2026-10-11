@@ -5,24 +5,53 @@ on:
     - cron: "0 0 * * *" # 08:00 Manila time daily; the step below only posts every 3rd day
   workflow_dispatch:
 
+# Overlapping runs would read the same stalest topic and post it twice.
+concurrency: weekly-post
+
 jobs:
   write-post:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - name: Call blog post endpoint
-        # JSON content type skips Qwik's CSRF check, which only guards form posts.
+      - name: Write and save a blog post
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ENDPOINT: ${{ vars.SITE_URL }}/cron/weekly-post/
         run: |
           # Count days since the epoch so the 3-day gap holds across month ends.
           if [ "${{ github.event_name }}" = "schedule" ] && [ $(( $(date -u +%s) / 86400 % 3 )) -ne 0 ]; then
             echo "Not a posting day, skipping."
             exit 0
           fi
-          # The endpoint streams, so a failure still comes back as 200 with "ok": false.
-          out=$(curl --fail-with-body -sSL -X POST \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+
+          # JSON content type skips Qwik's CSRF check, which only guards form posts.
+          call_site() {
+            curl --fail-with-body -sSL -X POST "$ENDPOINT" \
+              -H "Authorization: Bearer $CRON_SECRET" \
+              -H "Content-Type: application/json" \
+              --data-binary @-
+          }
+
+          plan=$(echo '{"step":"plan"}' | call_site) || { echo "$plan"; exit 1; }
+          topic=$(jq -r .topic <<<"$plan")
+          model=$(jq -r .model <<<"$plan")
+          echo "Topic: $topic ($model)"
+
+          # Gemini runs here because it can take longer than Vercel lets a request live.
+          gemini=$(jq -c .request <<<"$plan" | curl --fail-with-body -sS --max-time 600 -X POST \
+            "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent" \
+            -H "x-goog-api-key: $GEMINI_API_KEY" \
             -H "Content-Type: application/json" \
-            -d '{}' \
-            "${{ vars.SITE_URL }}/cron/weekly-post/") || { echo "$out"; exit 1; }
-          echo "$out"
-          echo "$out" | grep -q '"ok":true'
+            --data-binary @-) || { echo "$gemini"; exit 1; }
+          reason=$(jq -r '.candidates[0].finishReason // "none"' <<<"$gemini")
+          if [ "$reason" != "STOP" ]; then
+            echo "Gemini stopped early (finishReason: $reason)"
+            exit 1
+          fi
+
+          # Join every non-thought part, since thinking models can split the reply.
+          saved=$(jq -c --arg topic "$topic" \
+            '{step: "save", topic: $topic, text: ([.candidates[0].content.parts[]? | select(.thought != true) | .text // empty] | join(""))}' \
+            <<<"$gemini" | call_site) || { echo "$saved"; exit 1; }
+          echo "$saved"
