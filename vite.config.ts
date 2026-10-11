@@ -6,11 +6,12 @@ import { defineConfig, type UserConfig } from "vite";
 import { qwikVite } from "@qwik.dev/core/optimizer";
 import { qwikRouter } from "@qwik.dev/router/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import pkg from "./package.json";
+import { readFileSync } from "node:fs";
 import tailwindcss from "@tailwindcss/vite";
 import { qwikReact } from "@qwik.dev/react/vite";
 type PkgDep = Record<string, string>;
-const { dependencies = {}, devDependencies = {} } = pkg as any as {
+const pkg: unknown = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
+const { dependencies = {}, devDependencies = {} } = pkg as {
   dependencies: PkgDep;
   devDependencies: PkgDep;
   [key: string]: unknown;

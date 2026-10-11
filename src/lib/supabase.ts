@@ -28,8 +28,8 @@ export const createSupabase = (requestEv: RequestEventBase): SupabaseClient => {
     cookies: {
       getAll() {
         // Cookies cleared earlier in this request come back as null, so skip them.
-        return Object.entries(requestEv.cookie.getAll())
-          .filter(([, cookie]) => cookie != null)
+        return Object.entries(requestEv.cookie.getAll() as Record<string, { value: string } | null>)
+          .filter((entry): entry is [string, { value: string }] => entry[1] != null)
           .map(([name, cookie]) => ({ name, value: cookie.value }));
       },
       setAll(cookiesToSet) {

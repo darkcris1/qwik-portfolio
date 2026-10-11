@@ -1,4 +1,5 @@
 import { component$ } from "@qwik.dev/core";
+import CrisPicture from "~/media/cris-picture.webp?jsx";
 import { LinkedinIcon, GithubIcon, CodeIcon } from "qwik-feather-icons";
 import { getYearsOfExperience } from "~/lib/experience";
 
@@ -92,11 +93,11 @@ export default component$(() => {
               />
             </g>
           </svg>
-          <img
-            src="/assets/images/cris-picture.webp"
+          <CrisPicture
             alt="Cris Jr. T. Fandiño"
-            width={320}
-            height={320}
+            loading="eager"
+            fetchPriority="high"
+            sizes="(min-width: 768px) 292px, (min-width: 640px) 224px, 180px"
             class="absolute inset-[15%] h-[70%] w-[70%] rounded-full object-cover object-[50%_12%] ring-1 ring-white/15"
           />
         </div>

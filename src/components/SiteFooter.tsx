@@ -1,11 +1,12 @@
 import { component$ } from "@qwik.dev/core";
+import Logo from "~/media/logo.png?jsx";
 
 export const SiteFooter = component$<{ topHref: string }>(({ topHref }) => {
   return (
     <footer class="w-full bg-ink text-mist">
       <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm sm:flex-row">
         <span class="flex items-center gap-2.5">
-          <img src="/favicon.png" alt="" width={24} height={24} class="h-6 w-6 rounded-md object-cover" />©{" "}
+          <Logo alt="" sizes="24px" class="h-6 w-6 rounded-md object-cover" />©{" "}
           {new Date().getFullYear()} Cris Jr. T. Fandiño
         </span>
         <div class="flex items-center gap-5">

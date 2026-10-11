@@ -23,7 +23,6 @@ const { router, notFound, staticFile } = createQwikRouter({
 // Allow for dynamic port
 const port = Number(Bun.env.PORT ?? 3000);
 
-// eslint-disable-next-line no-console
 console.log(`Server started: http://localhost:${port}/`);
 
 // Optional request-aware diagnostics for crashes that escape request boundaries.

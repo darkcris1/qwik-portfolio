@@ -1,4 +1,5 @@
 import { component$, Slot } from "@qwik.dev/core";
+import Logo from "~/media/logo.png?jsx";
 import { Form, routeAction$, routeLoader$, type RequestHandler } from "@qwik.dev/router";
 import { createSupabase, getAdmin, type AdminUser } from "~/lib/supabase";
 
@@ -26,7 +27,7 @@ export default component$(() => {
       <header class="sticky top-0 z-40 border-b border-white/10 bg-ink text-white">
         <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
           <a href="/admin/" class="flex items-center gap-2.5 font-display text-sm font-medium">
-            <img src="/favicon.png" alt="" width={28} height={28} class="h-7 w-7 rounded-lg object-cover" />
+            <Logo alt="" sizes="28px" class="h-7 w-7 rounded-lg object-cover" />
             Blog admin
           </a>
           <div class="flex items-center gap-3 text-sm">

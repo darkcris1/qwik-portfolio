@@ -2,7 +2,7 @@
   "name": "my-qwik-empty-starter",
   "description": "Blank project with routing included",
   "engines": {
-    "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+    "node": "22.x"
   },
   "engines-annotation": "Mostly required by sharp which needs a Node-API v9 compatible runtime",
   "private": true,
@@ -14,7 +14,7 @@
     "build.server": "vite build -c adapters/vercel-edge/vite.config.ts",
     "build.server.bun": "qwik check-client src dist && vite build -c adapters/bun/vite.config.ts",
     "build.types": "tsc --incremental --noEmit",
-    "deploy": "vercel deploy",
+    "deploy": "bunx vercel deploy",
     "dev": "vite --mode ssr",
     "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
     "fmt": "prettier --write .",
@@ -50,7 +50,6 @@
     "react-dom": "^19.2.8",
     "typescript": "^6.0.3",
     "undici": "^8.10.2",
-    "vercel": "^59.11.7",
     "vite": "^8.3.2",
     "vite-tsconfig-paths": "^6.1.1",
     "zod": "^4.5.4"

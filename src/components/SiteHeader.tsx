@@ -1,4 +1,5 @@
 import { component$, useSignal, useVisibleTask$ } from "@qwik.dev/core";
+import Logo from "~/media/logo.png?jsx";
 import { MenuIcon, XIcon } from "qwik-feather-icons";
 
 export interface NavItem {
@@ -43,7 +44,7 @@ export const SiteHeader = component$<SiteHeaderProps>(({ items, active, homeHref
           class="flex h-14 items-center justify-between rounded-2xl border border-white/10 bg-ink/90 pl-3 pr-2 shadow-lg shadow-black/20 backdrop-blur-md"
         >
           <a href={homeHref} class="flex items-center gap-2.5 rounded-lg font-display text-sm font-medium text-white">
-            <img src="/favicon.png" alt="" width={32} height={32} class="h-8 w-8 rounded-lg object-cover" />
+            <Logo alt="" loading="eager" sizes="32px" class="h-8 w-8 rounded-lg object-cover" />
             Cris Fandiño
           </a>
 

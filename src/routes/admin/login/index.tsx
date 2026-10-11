@@ -1,4 +1,5 @@
 import { component$ } from "@qwik.dev/core";
+import Logo from "~/media/logo.png?jsx";
 import { Form, routeAction$, routeLoader$, useLocation } from "@qwik.dev/router";
 import { createSupabase, getAdmin, isSupabaseConfigured } from "~/lib/supabase";
 
@@ -40,7 +41,7 @@ export default component$(() => {
   return (
     <main class="grid min-h-screen place-items-center px-4">
       <div class="w-full max-w-sm rounded-3xl border border-line bg-white p-8 text-center shadow-2xl shadow-ink/5">
-        <img src="/favicon.png" alt="" width={48} height={48} class="mx-auto h-12 w-12 rounded-xl object-cover" />
+        <Logo alt="" loading="eager" sizes="48px" class="mx-auto h-12 w-12 rounded-xl object-cover" />
         <h1 class="mt-5 font-display text-xl font-bold tracking-tight text-ink">Blog admin</h1>
         <p class="mt-2 text-sm text-muted">Sign in with the owner's Google account.</p>
 

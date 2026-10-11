@@ -11,8 +11,7 @@ export default component$(({ action }: { action: any }) => {
   const actionErrors = useSignal<{[key:string]: any} | null>(null)
 
 
-  const handleSubmit = $(async (e: Event) => {
-    e.preventDefault();
+  const handleSubmit = $(async () => {
     isLoading.value = true;
     try {
       const res = await fetch('/api/send-email', {
@@ -105,7 +104,7 @@ export default component$(({ action }: { action: any }) => {
                 const errors = actionErrors.value;
                 if (typeof errors === "string") return errors;
                 if (Array.isArray(errors)) return errors[0];
-                if (typeof errors === "object" && errors !== null) {
+                if (typeof errors === "object") {
                   if ("detail" in errors && errors.detail) return errors.detail;
                   const firstKey = Object.keys(errors)[0];
                   const val = errors[firstKey];
