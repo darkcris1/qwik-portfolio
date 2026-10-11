@@ -11,7 +11,8 @@ concurrency: weekly-post
 jobs:
   write-post:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Worst case is 3 models x 2 tries x 5 min, plus waits.
+    timeout-minutes: 35
     steps:
       - name: Write and save a blog post
         env:
@@ -35,15 +36,39 @@ jobs:
 
           plan=$(echo '{"step":"plan"}' | call_site) || { echo "$plan"; exit 1; }
           topic=$(jq -r .topic <<<"$plan")
-          model=$(jq -r .model <<<"$plan")
-          echo "Topic: $topic ($model)"
+          echo "Topic: $topic"
 
           # Gemini runs here because it can take longer than Vercel lets a request live.
-          gemini=$(jq -c .request <<<"$plan" | curl --fail-with-body -sS --max-time 600 -X POST \
-            "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent" \
-            -H "x-goog-api-key: $GEMINI_API_KEY" \
-            -H "Content-Type: application/json" \
-            --data-binary @-) || { echo "$gemini"; exit 1; }
+          gemini=""
+          for model in $(jq -r '.models[]' <<<"$plan"); do
+            req=$(jq -c .request <<<"$plan")
+            tries=0
+            while :; do
+              tries=$((tries + 1))
+              if gemini=$(curl --fail-with-body -sS --max-time 300 -X POST \
+                "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent" \
+                -H "x-goog-api-key: $GEMINI_API_KEY" \
+                -H "Content-Type: application/json" \
+                --data-binary "$req"); then
+                echo "Written by $model"
+                break 2
+              fi
+              code=$(jq -r '.error.code // empty' <<<"$gemini" 2>/dev/null || true)
+              code=${code:-network}
+              echo "$model try $tries failed ($code): $(jq -r '.error.message // empty' <<<"$gemini" 2>/dev/null | head -c 200 || true)"
+              gemini=""
+              if [ "$code" = "400" ] && jq -e '.generationConfig.thinkingConfig' <<<"$req" >/dev/null; then
+                # Some models reject thinkingLevel, so retry once without it.
+                req=$(jq -c 'del(.generationConfig.thinkingConfig)' <<<"$req")
+                continue
+              fi
+              # Only busy, rate-limited or network errors get one more try on the same model.
+              case "$code" in 503|429|network) ;; *) break ;; esac
+              [ "$tries" -lt 2 ] || break
+              sleep 30
+            done
+          done
+          [ -n "$gemini" ] || { echo "Every Gemini model failed, try again later."; exit 1; }
           reason=$(jq -r '.candidates[0].finishReason // "none"' <<<"$gemini")
           if [ "$reason" != "STOP" ]; then
             echo "Gemini stopped early (finishReason: $reason)"

@@ -96,10 +96,17 @@ export const onPost: RequestHandler = async (requestEv) => {
           .map((p) => `- ${p.title}`)
           .join("\n") || "(none yet)";
 
+      // Tried in order; later ones are fallbacks for when Gemini is overloaded.
+      const models = (env.get("GEMINI_MODELS") || "gemini-3.8-flash,gemini-3-flash-preview,gemini-3.5-flash-lite")
+        .split(",")
+        .map((m) => m.trim())
+        .filter(Boolean);
+      if (models.length === 0) throw new Error("GEMINI_MODELS has no model names");
+
       json(200, {
         ok: true,
         topic,
-        model: env.get("GEMINI_MODEL") || "gemini-3.8-flash",
+        models,
         request: buildGeminiRequest(topic, pastTitles),
       });
       return;
