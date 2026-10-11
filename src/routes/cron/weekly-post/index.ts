@@ -131,6 +131,9 @@ export const onPost: RequestHandler = async (requestEv) => {
     json(200, { ok: true, id: data?.id, title: post.title, topic, status });
   } catch (err) {
     console.error("Scheduled post failed", err);
-    json(500, { error: err instanceof Error ? err.message : String(err) });
+    // Supabase errors are plain objects with a message, not Error instances.
+    const raw = typeof err === "object" && err && "message" in err ? err.message : undefined;
+    const message = typeof raw === "string" && raw ? raw : err instanceof Object ? JSON.stringify(err) : String(err);
+    json(500, { error: message });
   }
 };
