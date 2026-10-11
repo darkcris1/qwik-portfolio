@@ -39,8 +39,14 @@ jobs:
           echo "Topic: $topic"
 
           # Gemini runs here because it can take longer than Vercel lets a request live.
+          models=$(jq -r '.models[]?' <<<"$plan")
+          if [ -z "$models" ]; then
+            echo "Plan has no models list (got keys: $(jq -c 'keys' <<<"$plan")). Is the latest site deployed?"
+            exit 1
+          fi
+
           gemini=""
-          for model in $(jq -r '.models[]' <<<"$plan"); do
+          for model in $models; do
             req=$(jq -c .request <<<"$plan")
             tries=0
             while :; do
